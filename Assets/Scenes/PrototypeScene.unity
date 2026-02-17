@@ -209,13 +209,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 90538672}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
+  m_LocalRotation: {x: 0.82943285, y: -0.13264266, z: 0.22224581, w: 0.49502918}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 118.34, y: -30, z: 0}
 --- !u!1 &913387756
 GameObject:
   m_ObjectHideFlags: 0
@@ -251,8 +251,8 @@ Camera:
   m_GameObject: {fileID: 913387756}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.20114894, g: 0.4745098, b: 0.19215688, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -276,8 +276,8 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
-  orthographic size: 5
+  orthographic: 1
+  orthographic size: 4
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -301,8 +301,67 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 913387756}
   serializedVersion: 2
+  m_LocalRotation: {x: 0.23911761, y: 0.36964384, z: -0.09904577, w: 0.8923991}
+  m_LocalPosition: {x: -10, y: 10, z: -10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1054372549
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1054372551}
+  - component: {fileID: 1054372550}
+  m_Layer: 0
+  m_Name: TileGrid
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1054372550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1054372549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 612eb34659cec104cbde240c5ee628fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TileGrid
+  boardData: {fileID: 11400000, guid: 996defd4f89439f42aa191e5fcab53ca, type: 2}
+  tileSpacing: 1
+  emptyMaterial: {fileID: 2100000, guid: d71f3bed474897f49a9f09f1699a4f17, type: 2}
+  normalMaterial: {fileID: 2100000, guid: b1a91794492e61d4e8f777fd66d96053, type: 2}
+  lockedMaterial: {fileID: 2100000, guid: 78e95ed7ea479b242b9284cc6a7f25af, type: 2}
+  portalMaterial: {fileID: 2100000, guid: 3ee5f921a4cf4f745bccbd4b03acc50b, type: 2}
+  teleportMaterial: {fileID: 2100000, guid: 60538eec07010724da160838e4586cac, type: 2}
+  rotate90Material: {fileID: 2100000, guid: a3f9b7ead397a244282882b67124c9e6, type: 2}
+  rotate180Material: {fileID: 2100000, guid: e714e4a8404eb6043ada7f350dbd74de, type: 2}
+  jumpForwardMaterial: {fileID: 2100000, guid: 281a3ab3d0342184abca09843ecc8771, type: 2}
+  jumpVerticalMaterial: {fileID: 2100000, guid: 044ecd10ec5d9f34bba3b2bf868b53c4, type: 2}
+  speedUpMaterial: {fileID: 2100000, guid: f0ef8d9cadc5d084fa4516d0ed6af34d, type: 2}
+  blockMaterial: {fileID: 2100000, guid: e6c3fcae59254b44199d7d35c8052212, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 013ff52aac0620d498f05925b89ad25b, type: 2}
+  doorMaterial: {fileID: 2100000, guid: f079ea2753cea6a49ad8744795454f6f, type: 2}
+--- !u!4 &1054372551
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1054372549}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -314,3 +373,4 @@ SceneRoots:
   m_Roots:
   - {fileID: 913387759}
   - {fileID: 90538674}
+  - {fileID: 1054372551}
