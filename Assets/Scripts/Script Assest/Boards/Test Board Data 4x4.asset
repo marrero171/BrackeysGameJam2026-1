@@ -28,10 +28,10 @@ MonoBehaviour:
   - tileData: {fileID: 11400000, guid: 8836e5e5178dfc64d92ab3faede57a4d, type: 2}
     gridPosition: {x: 0, y: 3}
     rotation: 0
-  - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
+  - tileData: {fileID: 11400000, guid: cdc048330ca25ac478f2b87782d50777, type: 2}
     gridPosition: {x: 1, y: 0}
     rotation: 0
-  - tileData: {fileID: 11400000, guid: ccea6a554b2bc714f99ed58997b1fe75, type: 2}
+  - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
     gridPosition: {x: 1, y: 1}
     rotation: 0
   - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}

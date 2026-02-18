@@ -52,6 +52,10 @@ public class TileGrid : MonoBehaviour
             
             GameObject tileObject = Instantiate(tileInstance.tileData.prefab, worldPosition, rotation, transform);
             tileObject.name = $"Tile_{tileInstance.gridPosition.x}_{tileInstance.gridPosition.y}";
+            TileComponent tileComponent = tileObject.GetComponent<TileComponent>();
+            tileComponent.tileData = tileInstance.tileData;
+            tileComponent.gridPosition = tileInstance.gridPosition;
+            
             
             ApplyMaterialToTile(tileObject, tileInstance.tileData.tileType);
             
@@ -85,7 +89,36 @@ public class TileGrid : MonoBehaviour
         tileB.transform.position = worldPosA;
 
         tiles[positionA] = tileB;
+        tileB.GetComponent<TileComponent>().gridPosition = positionA;
         tiles[positionB] = tileA;
+        tileA.GetComponent<TileComponent>().gridPosition = positionB;
+    }
+
+    public void TrySwap(Vector2Int positionA)
+    {
+        GameObject tileA = GetTile(positionA);
+        TileComponent tileComponentA = tileA.GetComponent<TileComponent>();
+
+        if (tileComponentA.tileData.isLocked) { return; }
+
+        Vector2Int[] positionsToCheck = new Vector2Int[] { 
+            Vector2Int.up,
+            Vector2Int.right,
+            Vector2Int.down,
+            Vector2Int.left };
+
+        foreach (Vector2Int posOffset in positionsToCheck) {
+            Vector2Int positionB = positionA + posOffset;
+            GameObject tileB = GetTile(positionB);
+            if (tileB == null) { continue; }
+
+            TileComponent tileComponentB = tileB.GetComponent<TileComponent>();
+            if (tileComponentB.tileData.tileType == TileType.Empty)
+            {
+                SwapTiles(positionA, positionB);
+                break;
+            }
+        }
     }
 
     private Vector3 GridToWorldPosition(Vector2Int gridPosition)
