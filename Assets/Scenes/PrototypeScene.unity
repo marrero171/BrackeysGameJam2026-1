@@ -792,6 +792,8 @@ MonoBehaviour:
   portalMaterial: {fileID: 2100000, guid: 3ee5f921a4cf4f745bccbd4b03acc50b, type: 2}
   teleportMaterial: {fileID: 2100000, guid: 60538eec07010724da160838e4586cac, type: 2}
   rotate90Material: {fileID: 2100000, guid: a3f9b7ead397a244282882b67124c9e6, type: 2}
+  rotate90LeftMaterial: {fileID: 2100000, guid: 18e6acd8990f7254ab64d4405b4a0ca1, type: 2}
+  rotate90RightMaterial: {fileID: 2100000, guid: a1194cd016f607e4a8e4392635fde5e1, type: 2}
   rotate180Material: {fileID: 2100000, guid: e714e4a8404eb6043ada7f350dbd74de, type: 2}
   jumpForwardMaterial: {fileID: 2100000, guid: 281a3ab3d0342184abca09843ecc8771, type: 2}
   jumpVerticalMaterial: {fileID: 2100000, guid: 044ecd10ec5d9f34bba3b2bf868b53c4, type: 2}
@@ -1451,9 +1453,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70d49001d9576354592f48f8349c3aba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameUIManager
-  playButton: {fileID: 0}
-  winText: {fileID: 0}
-  failText: {fileID: 0}
+  playButton: {fileID: 648737824}
+  winText: {fileID: 1826586890}
+  failText: {fileID: 1182115027}
 --- !u!1 &2040814001
 GameObject:
   m_ObjectHideFlags: 0

@@ -145,6 +145,14 @@ public class CharacterMover : MonoBehaviour
                 yield break;
             }
 
+            if (!tileComponent.tileData.isWalkable)
+            {
+                Debug.Log($"[CharacterMover] Blocked tile at {nextPosition} - Cannot walk there!");
+                OnMoveFailed?.Invoke();
+                _isMoving = false;
+                yield break;
+            }
+
             yield return StartCoroutine(MoveStep(nextPosition, tileComponent.tileData));
 
             if (!_isMoving)
@@ -195,6 +203,28 @@ public class CharacterMover : MonoBehaviour
             case TileEffectResult.Fail:
                 OnMoveFailed?.Invoke();
                 _isMoving = false;
+                break;
+
+            case TileEffectResult.Teleport:
+                if (TileEffectResolver.FindTeleportPair(tileGrid, tileData.teleportID, _currentGridPosition, out Vector2Int pairPosition, out Vector2Int exitDirection))
+                {
+                    Debug.Log($"[CharacterMover] Teleporting from {_currentGridPosition} to {pairPosition}");
+                    
+                    _currentGridPosition = pairPosition;
+                    _moveDirection = exitDirection;
+                    
+                    Vector3 teleportPos = tileGrid.GridToWorldPosition(pairPosition);
+                    teleportPos.y += heightOffset;
+                    movingTransform.position = teleportPos;
+                    
+                    Debug.Log($"[CharacterMover] Teleported! New position: {_currentGridPosition}, New direction: {_moveDirection}");
+                }
+                else
+                {
+                    Debug.LogError($"[CharacterMover] Teleport failed - no pair found for ID {tileData.teleportID}");
+                    OnMoveFailed?.Invoke();
+                    _isMoving = false;
+                }
                 break;
 
             case TileEffectResult.Continue:

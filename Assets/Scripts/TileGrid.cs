@@ -13,6 +13,8 @@ public class TileGrid : MonoBehaviour
     [SerializeField] private Material portalMaterial;
     [SerializeField] private Material teleportMaterial;
     [SerializeField] private Material rotate90Material;
+    [SerializeField] private Material rotate90LeftMaterial;
+    [SerializeField] private Material rotate90RightMaterial;
     [SerializeField] private Material rotate180Material;
     [SerializeField] private Material jumpForwardMaterial;
     [SerializeField] private Material jumpVerticalMaterial;
@@ -97,6 +99,11 @@ public class TileGrid : MonoBehaviour
         return null;
     }
 
+    public Dictionary<Vector2Int, GameObject> GetAllTiles()
+    {
+        return tiles;
+    }
+
     public void SwapTiles(Vector2Int positionA, Vector2Int positionB)
     {
         GameObject tileA = GetTile(positionA);
@@ -175,6 +182,8 @@ public class TileGrid : MonoBehaviour
             case TileType.Portal: return portalMaterial;
             case TileType.Teleport: return teleportMaterial;
             case TileType.Rotate90: return rotate90Material;
+            case TileType.Rotate90Left: return rotate90LeftMaterial;
+            case TileType.Rotate90Right: return rotate90RightMaterial;
             case TileType.Rotate180: return rotate180Material;
             case TileType.JumpForward: return jumpForwardMaterial;
             case TileType.JumpVertical: return jumpVerticalMaterial;
