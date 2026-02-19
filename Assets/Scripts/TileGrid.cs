@@ -20,6 +20,8 @@ public class TileGrid : MonoBehaviour
     [SerializeField] private Material blockMaterial;
     [SerializeField] private Material triggerMaterial;
     [SerializeField] private Material doorMaterial;
+    [SerializeField] private Material startingTileMaterial;
+    [SerializeField] private Material goalTileMaterial;
     
     public delegate void TilesInstantiatedHandler();
     public event TilesInstantiatedHandler OnTilesInstantiated;
@@ -33,6 +35,11 @@ public class TileGrid : MonoBehaviour
             InstantiateTiles();
         }
     }
+    
+    public void SetBoardData(BoardData newBoardData)
+    {
+        boardData = newBoardData;
+    }
 
     public void InstantiateTiles()
     {
@@ -40,6 +47,7 @@ public class TileGrid : MonoBehaviour
 
         if (boardData == null || boardData.tiles == null)
         {
+            Debug.LogWarning("[TileGrid] No board data or tiles to instantiate");
             return;
         }
 
@@ -174,6 +182,8 @@ public class TileGrid : MonoBehaviour
             case TileType.Block: return blockMaterial;
             case TileType.Trigger: return triggerMaterial;
             case TileType.Door: return doorMaterial;
+            case TileType.StartingTile: return startingTileMaterial;
+            case TileType.GoalTile: return goalTileMaterial;
             default: return normalMaterial;
         }
     }

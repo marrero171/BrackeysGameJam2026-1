@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class InputManager : MonoBehaviour
 {
@@ -37,6 +38,13 @@ public class InputManager : MonoBehaviour
     {
         if (!_inputEnabled)
         {
+            return;
+        }
+
+        // ✅ NUEVO: Check if mouse is over UI
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+        {
+            // Mouse is over UI, don't process tile input
             return;
         }
 
@@ -186,6 +194,12 @@ public class InputManager : MonoBehaviour
         {
             if (hit.transform.TryGetComponent<TileComponent>(out var tileComponent))
             {
+                if (tileComponent.tileData != null && !tileComponent.tileData.IsSelectable())
+                {
+                    Debug.Log($"[InputManager] Tile at {tileComponent.gridPosition} is not selectable (type: {tileComponent.tileData.tileType})");
+                    return false;
+                }
+                
                 tileObject = hit.transform.gameObject;
                 gridPosition = tileComponent.gridPosition;
                 return true;

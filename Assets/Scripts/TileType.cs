@@ -12,5 +12,7 @@ public enum TileType
     SpeedUp,
     Block,
     Trigger,
-    Door
+    Door,
+    StartingTile,
+    GoalTile
 }

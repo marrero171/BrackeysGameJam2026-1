@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameUIManager : MonoBehaviour
 {
@@ -11,32 +12,36 @@ public class GameUIManager : MonoBehaviour
     {
         if (playButton != null)
         {
-            var buttonComponents = playButton.GetComponents<Component>();
-            foreach (var comp in buttonComponents)
+            Button button = playButton.GetComponent<Button>();
+            if (button != null)
             {
-                if (comp.GetType().Name == "Button")
-                {
-                    var buttonType = comp.GetType();
-                    var onClickField = buttonType.GetProperty("onClick");
-                    if (onClickField != null)
-                    {
-                        var onClickEvent = onClickField.GetValue(comp);
-                        var addListenerMethod = onClickEvent.GetType().GetMethod("AddListener");
-                        addListenerMethod.Invoke(onClickEvent, new object[] { (UnityEngine.Events.UnityAction)OnPlayButtonClicked });
-                    }
-                    break;
-                }
+                button.onClick.AddListener(OnPlayButtonClicked);
+                Debug.Log("[GameUIManager] Play button connected successfully");
+            }
+            else
+            {
+                Debug.LogError("[GameUIManager] PlayButton does not have a Button component!");
             }
         }
-
-        HideAllUI();
+        else
+        {
+            Debug.LogError("[GameUIManager] PlayButton GameObject is not assigned!");
+        }
     }
 
     private void OnDestroy()
     {
+        if (playButton != null)
+        {
+            Button button = playButton.GetComponent<Button>();
+            if (button != null)
+            {
+                button.onClick.RemoveListener(OnPlayButtonClicked);
+            }
+        }
     }
 
-    private void OnPlayButtonClicked()
+    public void OnPlayButtonClicked()
     {
         Debug.Log("[GameUIManager] Play button clicked");
         GameStateMachine.Instance?.TransitionTo<State_Playing>();

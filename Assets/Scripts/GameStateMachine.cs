@@ -38,7 +38,7 @@ public class GameStateMachine : MonoBehaviour
 
     private void InitializeStates()
     {
-        _states[typeof(State_Setup)] = new State_Setup(this, inputManager, uiManager);
+        _states[typeof(State_Setup)] = new State_Setup(this, inputManager, uiManager, characterMover);
         _states[typeof(State_Playing)] = new State_Playing(this, inputManager, characterMover);
         _states[typeof(State_Transitioning)] = new State_Transitioning(this);
         _states[typeof(State_Win)] = new State_Win(this, uiManager);

@@ -11,4 +11,18 @@ public class TileData : ScriptableObject
 
     [Header("Visual")]
     public Color highlightColor = new Color(1f, 0.8f, 0.3f, 1f);
+    
+    public bool IsSelectable()
+    {
+        return tileType != TileType.StartingTile && 
+               tileType != TileType.GoalTile && 
+               tileType != TileType.Locked;
+    }
+    
+    public bool IsMovable()
+    {
+        return !isLocked && 
+               tileType != TileType.StartingTile && 
+               tileType != TileType.GoalTile;
+    }
 }
