@@ -13,6 +13,8 @@ public class TileGrid : MonoBehaviour
     [SerializeField] private Material portalMaterial;
     [SerializeField] private Material teleportMaterial;
     [SerializeField] private Material rotate90Material;
+    [SerializeField] private Material rotate90LeftMaterial;
+    [SerializeField] private Material rotate90RightMaterial;
     [SerializeField] private Material rotate180Material;
     [SerializeField] private Material jumpForwardMaterial;
     [SerializeField] private Material jumpVerticalMaterial;
@@ -20,6 +22,8 @@ public class TileGrid : MonoBehaviour
     [SerializeField] private Material blockMaterial;
     [SerializeField] private Material triggerMaterial;
     [SerializeField] private Material doorMaterial;
+    [SerializeField] private Material startingTileMaterial;
+    [SerializeField] private Material goalTileMaterial;
     
     public delegate void TilesInstantiatedHandler();
     public event TilesInstantiatedHandler OnTilesInstantiated;
@@ -33,6 +37,11 @@ public class TileGrid : MonoBehaviour
             InstantiateTiles();
         }
     }
+    
+    public void SetBoardData(BoardData newBoardData)
+    {
+        boardData = newBoardData;
+    }
 
     public void InstantiateTiles()
     {
@@ -40,6 +49,7 @@ public class TileGrid : MonoBehaviour
 
         if (boardData == null || boardData.tiles == null)
         {
+            Debug.LogWarning("[TileGrid] No board data or tiles to instantiate");
             return;
         }
 
@@ -87,6 +97,11 @@ public class TileGrid : MonoBehaviour
             return tile;
         }
         return null;
+    }
+
+    public Dictionary<Vector2Int, GameObject> GetAllTiles()
+    {
+        return tiles;
     }
 
     public void SwapTiles(Vector2Int positionA, Vector2Int positionB)
@@ -167,6 +182,8 @@ public class TileGrid : MonoBehaviour
             case TileType.Portal: return portalMaterial;
             case TileType.Teleport: return teleportMaterial;
             case TileType.Rotate90: return rotate90Material;
+            case TileType.Rotate90Left: return rotate90LeftMaterial;
+            case TileType.Rotate90Right: return rotate90RightMaterial;
             case TileType.Rotate180: return rotate180Material;
             case TileType.JumpForward: return jumpForwardMaterial;
             case TileType.JumpVertical: return jumpVerticalMaterial;
@@ -174,6 +191,8 @@ public class TileGrid : MonoBehaviour
             case TileType.Block: return blockMaterial;
             case TileType.Trigger: return triggerMaterial;
             case TileType.Door: return doorMaterial;
+            case TileType.StartingTile: return startingTileMaterial;
+            case TileType.GoalTile: return goalTileMaterial;
             default: return normalMaterial;
         }
     }

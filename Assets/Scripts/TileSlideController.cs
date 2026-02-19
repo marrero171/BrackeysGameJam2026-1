@@ -56,8 +56,9 @@ public class TileSlideController : MonoBehaviour
             return false;
         }
 
-        if (tileComponent.tileData.isLocked)
+        if (!tileComponent.tileData.IsMovable())
         {
+            Debug.Log($"[TileSlideController] Tile at {clickedTilePosition} is not movable (type: {tileComponent.tileData.tileType})");
             return false;
         }
 
@@ -101,9 +102,9 @@ public class TileSlideController : MonoBehaviour
             return false;
         }
 
-        if (tileComponent.tileData.isLocked)
+        if (!tileComponent.tileData.IsMovable())
         {
-            Debug.Log($"  BLOCKED: Tile is locked");
+            Debug.Log($"  BLOCKED: Tile is not movable (type: {tileComponent.tileData.tileType})");
             return false;
         }
 

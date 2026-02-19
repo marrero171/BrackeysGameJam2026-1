@@ -16,34 +16,34 @@ MonoBehaviour:
   boardIndex: 0
   gridSize: {x: 4, y: 4}
   tiles:
-  - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
+  - tileData: {fileID: 11400000, guid: d71d181de83f34143b5a6b4a6bd3dfea, type: 2}
     gridPosition: {x: 0, y: 0}
     rotation: 0
   - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
     gridPosition: {x: 0, y: 1}
     rotation: 0
-  - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
+  - tileData: {fileID: 11400000, guid: a6bfc9b51609743438771dbc4073512e, type: 2}
     gridPosition: {x: 0, y: 2}
     rotation: 0
-  - tileData: {fileID: 11400000, guid: 8836e5e5178dfc64d92ab3faede57a4d, type: 2}
+  - tileData: {fileID: 11400000, guid: 859ad38ac4609454e90053831e902b78, type: 2}
     gridPosition: {x: 0, y: 3}
     rotation: 0
-  - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
+  - tileData: {fileID: 11400000, guid: ccea6a554b2bc714f99ed58997b1fe75, type: 2}
     gridPosition: {x: 1, y: 0}
     rotation: 0
   - tileData: {fileID: 11400000, guid: ccea6a554b2bc714f99ed58997b1fe75, type: 2}
     gridPosition: {x: 1, y: 1}
     rotation: 0
-  - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
+  - tileData: {fileID: 11400000, guid: cdc048330ca25ac478f2b87782d50777, type: 2}
     gridPosition: {x: 1, y: 2}
     rotation: 0
   - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
     gridPosition: {x: 1, y: 3}
     rotation: 0
-  - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
+  - tileData: {fileID: 11400000, guid: 9d8304a8a53ddb747bd4fba4a3266c02, type: 2}
     gridPosition: {x: 2, y: 0}
     rotation: 0
-  - tileData: {fileID: 11400000, guid: cdc048330ca25ac478f2b87782d50777, type: 2}
+  - tileData: {fileID: 11400000, guid: e423cfddded11ea45aab5ee919c871c8, type: 2}
     gridPosition: {x: 2, y: 1}
     rotation: 0
   - tileData: {fileID: 11400000, guid: ccea6a554b2bc714f99ed58997b1fe75, type: 2}
@@ -52,18 +52,15 @@ MonoBehaviour:
   - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
     gridPosition: {x: 2, y: 3}
     rotation: 0
-  - tileData: {fileID: 11400000, guid: 805291a516074d843ae653029f9d13fb, type: 2}
+  - tileData: {fileID: 11400000, guid: 859ad38ac4609454e90053831e902b78, type: 2}
     gridPosition: {x: 3, y: 0}
     rotation: 0
-  - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
+  - tileData: {fileID: 11400000, guid: 859ad38ac4609454e90053831e902b78, type: 2}
     gridPosition: {x: 3, y: 1}
     rotation: 0
   - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
     gridPosition: {x: 3, y: 2}
     rotation: 0
-  - tileData: {fileID: 11400000, guid: cdc048330ca25ac478f2b87782d50777, type: 2}
+  - tileData: {fileID: 11400000, guid: 56258167f7059b74a942cb13e4c61074, type: 2}
     gridPosition: {x: 3, y: 3}
     rotation: 0
-  characterStartPosition: {x: 0, y: 0}
-  characterStartDirection: {x: 0, y: 0, z: 1}
-  goalPosition: {x: 3, y: 3}

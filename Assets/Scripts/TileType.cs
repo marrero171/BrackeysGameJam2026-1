@@ -6,11 +6,15 @@ public enum TileType
     Portal,
     Teleport,
     Rotate90,
+    Rotate90Left,
+    Rotate90Right,
     Rotate180,
     JumpForward,
     JumpVertical,
     SpeedUp,
     Block,
     Trigger,
-    Door
+    Door,
+    StartingTile,
+    GoalTile
 }

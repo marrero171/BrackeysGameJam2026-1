@@ -4,12 +4,12 @@ using UnityEngine;
 public class CharacterMover : MonoBehaviour
 {
     [Header("References")]
+    [SerializeField] private GameObject characterPrefab;
     [SerializeField] private TileGrid tileGrid;
-    [SerializeField] private BoardData boardData;
 
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 2f;
-    [SerializeField] private float heightOffset = 1f;
+    [SerializeField] private float stepDuration = 0.3f;
+    [SerializeField] private float heightOffset = 0.5f;
 
     public delegate void GoalReachedHandler();
     public event GoalReachedHandler OnGoalReached;
@@ -17,25 +17,15 @@ public class CharacterMover : MonoBehaviour
     public delegate void MoveFailedHandler();
     public event MoveFailedHandler OnMoveFailed;
 
+    private GameObject _characterInstance;
+    private int _currentBoardIndex;
     private Vector2Int _currentGridPosition;
     private Vector2Int _moveDirection;
     private Coroutine _moveCoroutine;
     private bool _isMoving = false;
 
-    private void Start()
+    private void Awake()
     {
-        if (boardData != null)
-        {
-            _currentGridPosition = boardData.characterStartPosition;
-            _moveDirection = new Vector2Int((int)boardData.characterStartDirection.x, (int)boardData.characterStartDirection.z);
-
-            Vector3 startWorldPos = tileGrid.GridToWorldPosition(_currentGridPosition);
-            startWorldPos.y += heightOffset;
-            transform.position = startWorldPos;
-
-            Debug.Log($"[CharacterMover] Initialized at {_currentGridPosition}, direction: {_moveDirection}");
-        }
-
         OnGoalReached += HandleGoalReached;
         OnMoveFailed += HandleMoveFailed;
     }
@@ -44,6 +34,51 @@ public class CharacterMover : MonoBehaviour
     {
         OnGoalReached -= HandleGoalReached;
         OnMoveFailed -= HandleMoveFailed;
+    }
+
+    public void SpawnCharacter()
+    {
+        if (LevelManager.Instance == null || LevelManager.Instance.CurrentLevelData == null)
+        {
+            Debug.LogError("[CharacterMover] LevelManager or LevelData not found!");
+            return;
+        }
+
+        LevelData levelData = LevelManager.Instance.CurrentLevelData;
+
+        _currentBoardIndex = levelData.startingTile.boardIndex;
+        _currentGridPosition = levelData.startingTile.position;
+        _moveDirection = new Vector2Int(
+            (int)levelData.characterStartDirection.x,
+            (int)levelData.characterStartDirection.z
+        );
+
+        Vector3 spawnWorldPos = tileGrid.GridToWorldPosition(_currentGridPosition);
+        spawnWorldPos.y += heightOffset;
+
+        if (characterPrefab != null)
+        {
+            _characterInstance = Instantiate(characterPrefab, spawnWorldPos, Quaternion.identity, transform);
+            Debug.Log($"[CharacterMover] Character spawned from prefab at {_currentGridPosition}");
+        }
+        else
+        {
+            transform.position = spawnWorldPos;
+            _characterInstance = gameObject;
+            Debug.Log($"[CharacterMover] Character positioned (no prefab) at {_currentGridPosition}");
+        }
+
+        Debug.Log($"[CharacterMover] Initialized at board {_currentBoardIndex}, position {_currentGridPosition}, direction: {_moveDirection}");
+    }
+
+    public void DespawnCharacter()
+    {
+        if (_characterInstance != null && _characterInstance != gameObject)
+        {
+            Destroy(_characterInstance);
+            _characterInstance = null;
+            Debug.Log("[CharacterMover] Character despawned");
+        }
     }
 
     private void HandleGoalReached()
@@ -102,24 +137,26 @@ public class CharacterMover : MonoBehaviour
             }
 
             TileComponent tileComponent = nextTile.GetComponent<TileComponent>();
-            if (tileComponent != null && tileComponent.tileData != null)
+            if (tileComponent == null || tileComponent.tileData == null)
             {
-                if (tileComponent.tileData.isLocked)
-                {
-                    Debug.Log("[CharacterMover] Hit locked tile, movement failed");
-                    OnMoveFailed?.Invoke();
-                    _isMoving = false;
-                    yield break;
-                }
+                Debug.Log("[CharacterMover] Invalid tile ahead, movement failed");
+                OnMoveFailed?.Invoke();
+                _isMoving = false;
+                yield break;
             }
 
-            yield return StartCoroutine(MoveToTile(nextPosition));
-
-            if (nextPosition == boardData.goalPosition)
+            if (!tileComponent.tileData.isWalkable)
             {
-                Debug.Log("[CharacterMover] Reached goal!");
-                OnGoalReached?.Invoke();
+                Debug.Log($"[CharacterMover] Blocked tile at {nextPosition} - Cannot walk there!");
+                OnMoveFailed?.Invoke();
                 _isMoving = false;
+                yield break;
+            }
+
+            yield return StartCoroutine(MoveStep(nextPosition, tileComponent.tileData));
+
+            if (!_isMoving)
+            {
                 yield break;
             }
 
@@ -127,32 +164,87 @@ public class CharacterMover : MonoBehaviour
         }
     }
 
-    private IEnumerator MoveToTile(Vector2Int targetGridPos)
+    private IEnumerator MoveStep(Vector2Int targetGridPos, TileData tileData)
     {
-        Vector3 startPos = transform.position;
+        Transform movingTransform = _characterInstance != null ? _characterInstance.transform : transform;
+
+        Vector3 startPos = movingTransform.position;
         Vector3 targetPos = tileGrid.GridToWorldPosition(targetGridPos);
         targetPos.y += heightOffset;
 
         float elapsedTime = 0f;
-        float duration = 1f / moveSpeed;
 
-        while (elapsedTime < duration)
+        while (elapsedTime < stepDuration)
         {
             elapsedTime += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsedTime / duration);
-            transform.position = Vector3.Lerp(startPos, targetPos, t);
+            float t = Mathf.Clamp01(elapsedTime / stepDuration);
+            movingTransform.position = Vector3.Lerp(startPos, targetPos, t);
             yield return null;
         }
 
-        transform.position = targetPos;
+        movingTransform.position = targetPos;
         _currentGridPosition = targetGridPos;
 
         Debug.Log($"[CharacterMover] Moved to {_currentGridPosition}");
+
+        TileEffectResult result = TileEffectResolver.Resolve(
+            tileData.tileType,
+            ref _moveDirection,
+            _currentGridPosition
+        );
+
+        switch (result)
+        {
+            case TileEffectResult.Win:
+                OnGoalReached?.Invoke();
+                _isMoving = false;
+                break;
+
+            case TileEffectResult.Fail:
+                OnMoveFailed?.Invoke();
+                _isMoving = false;
+                break;
+
+            case TileEffectResult.Teleport:
+                if (TileEffectResolver.FindTeleportPair(tileGrid, tileData.teleportID, _currentGridPosition, out Vector2Int pairPosition, out Vector2Int exitDirection))
+                {
+                    Debug.Log($"[CharacterMover] Teleporting from {_currentGridPosition} to {pairPosition}");
+                    
+                    _currentGridPosition = pairPosition;
+                    _moveDirection = exitDirection;
+                    
+                    Vector3 teleportPos = tileGrid.GridToWorldPosition(pairPosition);
+                    teleportPos.y += heightOffset;
+                    movingTransform.position = teleportPos;
+                    
+                    Debug.Log($"[CharacterMover] Teleported! New position: {_currentGridPosition}, New direction: {_moveDirection}");
+                }
+                else
+                {
+                    Debug.LogError($"[CharacterMover] Teleport failed - no pair found for ID {tileData.teleportID}");
+                    OnMoveFailed?.Invoke();
+                    _isMoving = false;
+                }
+                break;
+
+            case TileEffectResult.Continue:
+                break;
+        }
     }
 
     public Vector2Int GetCurrentPosition()
     {
         return _currentGridPosition;
+    }
+
+    public int GetCurrentBoardIndex()
+    {
+        return _currentBoardIndex;
+    }
+
+    public Vector2Int GetCurrentDirection()
+    {
+        return _moveDirection;
     }
 
     public void SetDirection(Vector2Int newDirection)
