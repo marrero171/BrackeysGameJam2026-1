@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3215568663905698800}
   - component: {fileID: 9034628184002584228}
   m_Layer: 0
-  m_Name: Basic Tile
+  m_Name: 90LeftTile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -90,7 +90,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 470590c17ce08c743b6533f47ac139b5, type: 2}
+  - {fileID: 2100000, guid: 18e6acd8990f7254ab64d4405b4a0ca1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -126,7 +126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cda24f051d795db4ca1ca23835032d82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  tileData: {fileID: 11400000, guid: cdc048330ca25ac478f2b87782d50777, type: 2}
+  tileData: {fileID: 11400000, guid: 859ad38ac4609454e90053831e902b78, type: 2}
   gridPosition: {x: 0, y: 0}
 --- !u!1 &7768417719628934433
 GameObject:

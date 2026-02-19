@@ -749,7 +749,7 @@ Transform:
   m_GameObject: {fileID: 913387756}
   serializedVersion: 2
   m_LocalRotation: {x: 0.23911761, y: 0.36964384, z: -0.09904577, w: 0.8923991}
-  m_LocalPosition: {x: -10, y: 10, z: -10}
+  m_LocalPosition: {x: -10.499724, y: 9.244234, z: -10.117321}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -784,7 +784,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 612eb34659cec104cbde240c5ee628fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TileGrid
-  boardData: {fileID: 11400000, guid: 996defd4f89439f42aa191e5fcab53ca, type: 2}
+  boardData: {fileID: 11400000, guid: 4aebfd8c21d050f469e5e57bebd27c14, type: 2}
   tileSpacing: 1
   emptyMaterial: {fileID: 2100000, guid: d71f3bed474897f49a9f09f1699a4f17, type: 2}
   normalMaterial: {fileID: 2100000, guid: b1a91794492e61d4e8f777fd66d96053, type: 2}
@@ -1406,7 +1406,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e79eb72401da24d409dfef9ab1680463, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelManager
-  levelData: {fileID: 11400000, guid: 2589a079c22bef04fa5692a13377ae13, type: 2}
+  levelData: {fileID: 11400000, guid: db2908c189f86e246adc27af47ee188e, type: 2}
   tileGrid: {fileID: 1054372550}
   currentBoardIndex: 0
 --- !u!1 &1861805482
@@ -1615,11 +1615,11 @@ SceneRoots:
   - {fileID: 1258095746}
   - {fileID: 13688041}
   - {fileID: 1861805483}
+  - {fileID: 1831827314}
   - {fileID: 2122214396}
-  - {fileID: 1054372551}
   - {fileID: 500773278}
+  - {fileID: 1054372551}
   - {fileID: 251796710}
   - {fileID: 2040814005}
-  - {fileID: 1831827314}
   - {fileID: 1830525417}
   - {fileID: 370138655}
