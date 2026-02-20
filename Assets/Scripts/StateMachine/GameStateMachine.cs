@@ -14,6 +14,11 @@ public class GameStateMachine : MonoBehaviour
     private Dictionary<Type, IGameState> _states = new Dictionary<Type, IGameState>();
     private IGameState _currentState;
 
+    public IGameState CurrentState => _currentState;
+
+    public delegate void StateChangedHandler(IGameState newState);
+    public event StateChangedHandler OnStateChanged;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -62,6 +67,8 @@ public class GameStateMachine : MonoBehaviour
         _currentState.Enter();
 
         Debug.Log($"[GameStateMachine] Transitioned to {stateType.Name}");
+
+        OnStateChanged?.Invoke(_currentState);
     }
 
     public T GetState<T>() where T : IGameState

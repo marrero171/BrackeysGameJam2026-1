@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BoardData
   boardId: test_board_01
   boardIndex: 0
-  gridSize: {x: 6, y: 3}
+  gridSize: {x: 4, y: 4}
   tiles:
   - tileData: {fileID: 11400000, guid: d71d181de83f34143b5a6b4a6bd3dfea, type: 2}
     gridPosition: {x: 0, y: 1}
@@ -61,12 +61,6 @@ MonoBehaviour:
   - tileData: {fileID: 11400000, guid: a6bfc9b51609743438771dbc4073512e, type: 2}
     gridPosition: {x: 1, y: 1}
     rotation: 0
-  - tileData: {fileID: 11400000, guid: 56258167f7059b74a942cb13e4c61074, type: 2}
+  - tileData: {fileID: 11400000, guid: ebd2cf53b39160e4388fc10fa2658503, type: 2}
     gridPosition: {x: 5, y: 1}
-    rotation: 0
-  - tileData: {fileID: 11400000, guid: cdc048330ca25ac478f2b87782d50777, type: 2}
-    gridPosition: {x: 4, y: 1}
-    rotation: 0
-  - tileData: {fileID: 11400000, guid: 9d8304a8a53ddb747bd4fba4a3266c02, type: 2}
-    gridPosition: {x: 4, y: 0}
     rotation: 0

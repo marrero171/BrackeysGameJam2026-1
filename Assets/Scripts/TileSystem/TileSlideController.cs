@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 public class TileSlideController : MonoBehaviour
 {
-    [SerializeField] private TileGrid tileGrid;
     [SerializeField] private float slideDuration = 0.15f;
     [SerializeField] private int maxUndoSteps = 20;
 
     public delegate void TileMovedHandler(Vector2Int fromPosition, Vector2Int toPosition);
     public event TileMovedHandler OnTileMoved;
 
+    private TileGrid ActiveTileGrid => BoardManager.Instance?.ActiveBoard?.TileGrid;
     private List<Vector2Int> _emptyPositions = new List<Vector2Int>();
     private Stack<MoveRecord> _undoStack = new Stack<MoveRecord>();
     private bool _isAnimating = false;
@@ -23,28 +23,34 @@ public class TileSlideController : MonoBehaviour
 
     private void Start()
     {
-        if (tileGrid != null)
+        if (BoardManager.Instance != null)
         {
-            tileGrid.OnTilesInstantiated += FindAllEmptyPositions;
+            BoardManager.Instance.OnBoardChanged += OnBoardChanged;
         }
     }
 
     private void OnDestroy()
     {
-        if (tileGrid != null)
+        if (BoardManager.Instance != null)
         {
-            tileGrid.OnTilesInstantiated -= FindAllEmptyPositions;
+            BoardManager.Instance.OnBoardChanged -= OnBoardChanged;
         }
+    }
+
+    private void OnBoardChanged(int previousIndex, int newIndex)
+    {
+        FindAllEmptyPositions();
+        _undoStack.Clear();
     }
 
     public bool TrySlide(Vector2Int clickedTilePosition)
     {
-        if (_isAnimating)
+        if (_isAnimating || ActiveTileGrid == null)
         {
             return false;
         }
 
-        TileData clickedTileData = tileGrid.GetTileData(clickedTilePosition);
+        TileData clickedTileData = ActiveTileGrid.GetTileData(clickedTilePosition);
         if (clickedTileData == null)
         {
             return false;
@@ -70,12 +76,12 @@ public class TileSlideController : MonoBehaviour
 
     public bool TrySlideInDirection(Vector2Int tilePosition, Vector2Int direction)
     {
-        if (_isAnimating)
+        if (_isAnimating || ActiveTileGrid == null)
         {
             return false;
         }
 
-        TileData tileData = tileGrid.GetTileData(tilePosition);
+        TileData tileData = ActiveTileGrid.GetTileData(tilePosition);
         if (tileData == null)
         {
             return false;
@@ -181,7 +187,13 @@ public class TileSlideController : MonoBehaviour
     {
         _isAnimating = true;
 
-        GameObject movingTile = tileGrid.GetTile(fromPosition);
+        if (ActiveTileGrid == null)
+        {
+            _isAnimating = false;
+            yield break;
+        }
+
+        GameObject movingTile = ActiveTileGrid.GetTile(fromPosition);
         if (movingTile == null)
         {
             _isAnimating = false;
@@ -189,7 +201,14 @@ public class TileSlideController : MonoBehaviour
         }
 
         Vector3 startWorldPos = movingTile.transform.position;
-        Vector3 targetWorldPos = tileGrid.GetTile(toPosition).transform.position;
+        GameObject targetTile = ActiveTileGrid.GetTile(toPosition);
+        if (targetTile == null)
+        {
+            _isAnimating = false;
+            yield break;
+        }
+        
+        Vector3 targetWorldPos = targetTile.transform.position;
 
         float elapsedTime = 0f;
 
@@ -207,7 +226,7 @@ public class TileSlideController : MonoBehaviour
 
         movingTile.transform.position = targetWorldPos;
 
-        tileGrid.SwapTiles(fromPosition, toPosition);
+        ActiveTileGrid.SwapTiles(fromPosition, toPosition);
 
         _emptyPositions.Remove(toPosition);
         _emptyPositions.Add(fromPosition);
@@ -226,12 +245,18 @@ public class TileSlideController : MonoBehaviour
     {
         _emptyPositions.Clear();
         
+        if (ActiveTileGrid == null)
+        {
+            Debug.LogWarning("[TileSlideController] ActiveTileGrid is null, cannot find empty positions");
+            return;
+        }
+        
         for (int x = 0; x < 100; x++)
         {
             for (int y = 0; y < 100; y++)
             {
                 Vector2Int gridPos = new Vector2Int(x, y);
-                TileData tileData = tileGrid.GetTileData(gridPos);
+                TileData tileData = ActiveTileGrid.GetTileData(gridPos);
 
                 if (tileData != null && tileData.tileType == TileType.Empty)
                 {

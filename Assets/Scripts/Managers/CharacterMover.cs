@@ -5,13 +5,14 @@ public class CharacterMover : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private GameObject characterPrefab;
-    [SerializeField] private TileGrid tileGrid;
 
     [Header("Movement Settings")]
     [SerializeField] private float stepDuration = 0.3f;
     [SerializeField] private float heightOffset = 0.5f;
     [Header("Timing")]
     [SerializeField] private float stepPauseDuration = 0.05f;
+
+    private TileGrid ActiveTileGrid => BoardManager.Instance?.ActiveBoard?.TileGrid;
 
 
     public delegate void GoalReachedHandler();
@@ -41,6 +42,9 @@ public class CharacterMover : MonoBehaviour
 
     public void SpawnCharacter()
     {
+        StopMoving();
+        DespawnCharacter();
+        
         if (LevelManager.Instance == null || LevelManager.Instance.CurrentLevelData == null)
         {
             Debug.LogError("[CharacterMover] LevelManager or LevelData not found!");
@@ -56,7 +60,7 @@ public class CharacterMover : MonoBehaviour
             (int)levelData.characterStartDirection.z
         );
 
-        Vector3 spawnWorldPos = tileGrid.GridToWorldPosition(_currentGridPosition);
+        Vector3 spawnWorldPos = ActiveTileGrid.GridToWorldPosition(_currentGridPosition);
         spawnWorldPos.y += heightOffset;
 
         if (characterPrefab != null)
@@ -130,7 +134,7 @@ public class CharacterMover : MonoBehaviour
         Vector3 startPos = movingTransform.position;
 
         Vector3 targetPos =
-            tileGrid.GridToWorldPosition(targetGridPos);
+            ActiveTileGrid.GridToWorldPosition(targetGridPos);
         targetPos.y += heightOffset;
 
         float elapsedTime = 0f;
@@ -156,7 +160,7 @@ public class CharacterMover : MonoBehaviour
         Vector3 startPos = movingTransform.position;
 
         Vector3 targetPos =
-            tileGrid.GridToWorldPosition(targetGridPos);
+            ActiveTileGrid.GridToWorldPosition(targetGridPos);
         targetPos.y += heightOffset;
 
         float jumpHeight = 1.0f;
@@ -188,7 +192,7 @@ public class CharacterMover : MonoBehaviour
         Vector3 shrinkScale = Vector3.zero;
 
         Vector3 targetPos =
-            tileGrid.GridToWorldPosition(targetGridPos);
+            ActiveTileGrid.GridToWorldPosition(targetGridPos);
         targetPos.y += heightOffset;
 
         float duration = stepDuration * 0.4f;
@@ -229,7 +233,7 @@ public class CharacterMover : MonoBehaviour
         {
             Vector2Int nextPosition = _currentGridPosition + _moveDirection;
 
-            TileData nextTileData = tileGrid.GetTileData(nextPosition);
+            TileData nextTileData = ActiveTileGrid.GetTileData(nextPosition);
             if (nextTileData == null)
             {
                 OnMoveFailed?.Invoke();
@@ -289,7 +293,7 @@ public class CharacterMover : MonoBehaviour
         Transform movingTransform = _characterInstance != null ? _characterInstance.transform : transform;
 
         Vector3 startPos = movingTransform.position;
-        Vector3 targetPos = tileGrid.GridToWorldPosition(targetGridPos);
+        Vector3 targetPos = ActiveTileGrid.GridToWorldPosition(targetGridPos);
         targetPos.y += heightOffset;
         float elapsedTime = 0f;
 
@@ -306,7 +310,7 @@ public class CharacterMover : MonoBehaviour
 
         TileEffectResult result = TileEffectResolver.Resolve(
             tileData,
-            tileGrid,
+            ActiveTileGrid,
             ref _moveDirection,
             _currentGridPosition
         );
@@ -324,12 +328,12 @@ public class CharacterMover : MonoBehaviour
                 break;
 
             case TileEffectResult.Teleport:
-                if (TileEffectResolver.FindTeleportPair(tileGrid, tileData.teleportID, _currentGridPosition, out Vector2Int pairPosition, out Vector2Int exitDirection))
+                if (TileEffectResolver.FindTeleportPair(ActiveTileGrid, tileData.teleportID, _currentGridPosition, out Vector2Int pairPosition, out Vector2Int exitDirection))
                 {
                     _currentGridPosition = pairPosition;
                     _moveDirection = exitDirection;
                     
-                    Vector3 teleportPos = tileGrid.GridToWorldPosition(pairPosition);
+                    Vector3 teleportPos = ActiveTileGrid.GridToWorldPosition(pairPosition);
                     teleportPos.y += heightOffset;
                     movingTransform.position = teleportPos;
                 }
@@ -380,7 +384,7 @@ public class CharacterMover : MonoBehaviour
         Vector2Int landingPosition = currentPosition + (_moveDirection * (jumpDistance + 1));
         
         Vector3 startPos = movingTransform.position;
-        Vector3 endPos = tileGrid.GridToWorldPosition(landingPosition);
+        Vector3 endPos = ActiveTileGrid.GridToWorldPosition(landingPosition);
         endPos.y += heightOffset;
         
         float jumpHeight = 0.5f;
@@ -408,12 +412,12 @@ public class CharacterMover : MonoBehaviour
         movingTransform.position = endPos;
         _currentGridPosition = landingPosition;
         
-        TileData landingTileData = tileGrid.GetTileData(landingPosition);
+        TileData landingTileData = ActiveTileGrid.GetTileData(landingPosition);
         if (landingTileData != null)
         {
             TileEffectResult landingResult = TileEffectResolver.Resolve(
                 landingTileData,
-                tileGrid,
+                ActiveTileGrid,
                 ref _moveDirection,
                 _currentGridPosition
             );
@@ -444,13 +448,13 @@ public class CharacterMover : MonoBehaviour
                 break;
                 
             case TileEffectResult.Teleport:
-                if (TileEffectResolver.FindTeleportPair(tileGrid, tileData.teleportID, _currentGridPosition, out Vector2Int pairPosition, out Vector2Int exitDirection))
+                if (TileEffectResolver.FindTeleportPair(ActiveTileGrid, tileData.teleportID, _currentGridPosition, out Vector2Int pairPosition, out Vector2Int exitDirection))
                 {
                     _currentGridPosition = pairPosition;
                     _moveDirection = exitDirection;
                     
                     Transform movingTransform = _characterInstance != null ? _characterInstance.transform : transform;
-                    Vector3 teleportPos = tileGrid.GridToWorldPosition(pairPosition);
+                    Vector3 teleportPos = ActiveTileGrid.GridToWorldPosition(pairPosition);
                     teleportPos.y += heightOffset;
                     movingTransform.position = teleportPos;
                     

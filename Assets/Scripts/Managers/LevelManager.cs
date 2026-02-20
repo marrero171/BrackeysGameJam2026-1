@@ -6,14 +6,11 @@ public class LevelManager : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private LevelData levelData;
-    [SerializeField] private TileGrid tileGrid;
-
-    [Header("Current State")]
-    [SerializeField] private int currentBoardIndex = 0;
+    [SerializeField] private BoardManager boardManager;
 
     public LevelData CurrentLevelData => levelData;
-    public int CurrentBoardIndex => currentBoardIndex;
-    public BoardData CurrentBoard => levelData?.boards[currentBoardIndex];
+    public int CurrentBoardIndex => boardManager != null ? boardManager.ActiveBoardIndex : -1;
+    public BoardData CurrentBoard => boardManager?.ActiveBoard?.BoardData;
     
     public GameObject StartingTileObject { get; private set; }
     public GameObject GoalTileObject { get; private set; }
@@ -39,9 +36,14 @@ public class LevelManager : MonoBehaviour
 
     private void Start()
     {
-        if (tileGrid != null)
+        if (boardManager == null)
         {
-            tileGrid.OnTilesInstantiated += OnTilesReady;
+            boardManager = BoardManager.Instance;
+        }
+
+        if (boardManager != null)
+        {
+            boardManager.OnBoardChanged += OnBoardChanged;
         }
 
         LoadLevel();
@@ -49,9 +51,9 @@ public class LevelManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (tileGrid != null)
+        if (boardManager != null)
         {
-            tileGrid.OnTilesInstantiated -= OnTilesReady;
+            boardManager.OnBoardChanged -= OnBoardChanged;
         }
 
         if (Instance == this)
@@ -74,47 +76,50 @@ public class LevelManager : MonoBehaviour
             return;
         }
 
-        currentBoardIndex = levelData.startingTile.boardIndex;
-        
-        if (tileGrid != null)
+        if (boardManager == null)
         {
-            tileGrid.SetBoardData(CurrentBoard);
-            tileGrid.InstantiateTiles();
+            Debug.LogError("[LevelManager] BoardManager not found!");
+            return;
         }
 
-        Debug.Log($"[LevelManager] Loading level '{levelData.levelId}', starting at board {currentBoardIndex}");
+        boardManager.LoadBoards(levelData.boards);
+
+        int startingBoardIndex = levelData.startingTile.boardIndex;
+        boardManager.SetActiveBoard(startingBoardIndex);
+
+        Debug.Log($"[LevelManager] Loading level '{levelData.levelId}', starting at board {startingBoardIndex}");
+        
+        DetectSpecialTiles();
         
         OnLevelLoaded?.Invoke();
     }
 
     public void LoadBoard(int boardIndex)
     {
-        if (levelData == null || levelData.boards == null)
+        if (boardManager == null)
         {
-            Debug.LogError("[LevelManager] Cannot load board: no level data!");
+            Debug.LogError("[LevelManager] BoardManager not found!");
             return;
         }
 
-        if (boardIndex < 0 || boardIndex >= levelData.boards.Length)
+        if (!boardManager.CanSwitchToBoard(boardIndex))
         {
-            Debug.LogError($"[LevelManager] Board index {boardIndex} out of range!");
+            Debug.LogError($"[LevelManager] Cannot switch to board {boardIndex}");
             return;
         }
 
-        currentBoardIndex = boardIndex;
-        
-        if (tileGrid != null)
-        {
-            tileGrid.SetBoardData(CurrentBoard);
-            tileGrid.InstantiateTiles();
-        }
-
-        Debug.Log($"[LevelManager] Loaded board {boardIndex}");
+        boardManager.SetActiveBoard(boardIndex);
     }
 
-    private void OnTilesReady()
+    private void OnBoardChanged(int previousIndex, int newIndex)
     {
+        Debug.Log($"[LevelManager] Board changed from {previousIndex} to {newIndex}");
         DetectSpecialTiles();
+        
+        if (GameStateMachine.Instance != null)
+        {
+            GameStateMachine.Instance.TransitionTo<State_Setup>();
+        }
     }
 
     private void DetectSpecialTiles()
@@ -122,9 +127,18 @@ public class LevelManager : MonoBehaviour
         StartingTileObject = null;
         GoalTileObject = null;
 
-        if (levelData.startingTile.boardIndex == currentBoardIndex)
+        if (boardManager == null || boardManager.ActiveBoard == null)
         {
-            StartingTileObject = tileGrid.GetTile(levelData.startingTile.position);
+            Debug.LogWarning("[LevelManager] Cannot detect special tiles: no active board");
+            return;
+        }
+
+        TileGrid activeTileGrid = boardManager.ActiveBoard.TileGrid;
+        int activeBoardIndex = boardManager.ActiveBoardIndex;
+
+        if (levelData.startingTile.boardIndex == activeBoardIndex)
+        {
+            StartingTileObject = activeTileGrid.GetTile(levelData.startingTile.position);
             
             if (StartingTileObject != null)
             {
@@ -136,9 +150,9 @@ public class LevelManager : MonoBehaviour
             }
         }
 
-        if (levelData.goalTile.boardIndex == currentBoardIndex)
+        if (levelData.goalTile.boardIndex == activeBoardIndex)
         {
-            GoalTileObject = tileGrid.GetTile(levelData.goalTile.position);
+            GoalTileObject = activeTileGrid.GetTile(levelData.goalTile.position);
             
             if (GoalTileObject != null)
             {
@@ -155,21 +169,27 @@ public class LevelManager : MonoBehaviour
 
     public bool IsStartingTileInCurrentBoard()
     {
-        return levelData.startingTile.boardIndex == currentBoardIndex;
+        return levelData.startingTile.boardIndex == CurrentBoardIndex;
     }
 
     public bool IsGoalTileInCurrentBoard()
     {
-        return levelData.goalTile.boardIndex == currentBoardIndex;
+        return levelData.goalTile.boardIndex == CurrentBoardIndex;
     }
 
     public GameObject GetTileAt(Vector2Int position)
     {
-        return tileGrid?.GetTile(position);
+        if (boardManager?.ActiveBoard?.TileGrid == null)
+            return null;
+
+        return boardManager.ActiveBoard.TileGrid.GetTile(position);
     }
 
     public Vector3 GridToWorldPosition(Vector2Int gridPosition)
     {
-        return tileGrid?.GridToWorldPosition(gridPosition) ?? Vector3.zero;
+        if (boardManager?.ActiveBoard?.TileGrid == null)
+            return Vector3.zero;
+
+        return boardManager.ActiveBoard.TileGrid.GridToWorldPosition(gridPosition);
     }
 }

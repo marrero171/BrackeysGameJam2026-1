@@ -13,10 +13,8 @@ public class TileGrid : MonoBehaviour
 
     private void Start()
     {
-        if (boardData != null)
-        {
-            InstantiateTiles();
-        }
+        // Note: InstantiateTiles() is now called by Board.Initialize()
+        // This prevents double instantiation when using BoardManager
     }
     
     public void SetBoardData(BoardData newBoardData)
@@ -166,7 +164,7 @@ public class TileGrid : MonoBehaviour
         }
     }
 
-    private void ClearTiles()
+    public void ClearTiles()
     {
         foreach (GameObject tile in tiles.Values)
         {
