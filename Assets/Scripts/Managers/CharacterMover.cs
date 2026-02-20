@@ -10,6 +10,9 @@ public class CharacterMover : MonoBehaviour
     [Header("Movement Settings")]
     [SerializeField] private float stepDuration = 0.3f;
     [SerializeField] private float heightOffset = 0.5f;
+    [Header("Timing")]
+    [SerializeField] private float stepPauseDuration = 0.05f;
+
 
     public delegate void GoalReachedHandler();
     public event GoalReachedHandler OnGoalReached;
@@ -119,6 +122,105 @@ public class CharacterMover : MonoBehaviour
         }
     }
 
+
+    private IEnumerator DefaultMoveVisual(
+    Transform movingTransform,
+    Vector2Int targetGridPos)
+    {
+        Vector3 startPos = movingTransform.position;
+
+        Vector3 targetPos =
+            tileGrid.GridToWorldPosition(targetGridPos);
+        targetPos.y += heightOffset;
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < stepDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsedTime / stepDuration);
+
+            movingTransform.position =
+                Vector3.Lerp(startPos, targetPos, t);
+
+            yield return null;
+        }
+
+        movingTransform.position = targetPos;
+    }
+
+    private IEnumerator JumpVisual(
+    Transform movingTransform,
+    Vector2Int targetGridPos)
+    {
+        Vector3 startPos = movingTransform.position;
+
+        Vector3 targetPos =
+            tileGrid.GridToWorldPosition(targetGridPos);
+        targetPos.y += heightOffset;
+
+        float jumpHeight = 1.0f;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < stepDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsedTime / stepDuration);
+
+            Vector3 pos = Vector3.Lerp(startPos, targetPos, t);
+
+            // Parabolic arc
+            pos.y += Mathf.Sin(t * Mathf.PI) * jumpHeight;
+
+            movingTransform.position = pos;
+
+            yield return null;
+        }
+
+        movingTransform.position = targetPos;
+    }
+
+    private IEnumerator TeleportVisual(
+    Transform movingTransform,
+    Vector2Int targetGridPos)
+    {
+        Vector3 originalScale = movingTransform.localScale;
+        Vector3 shrinkScale = Vector3.zero;
+
+        Vector3 targetPos =
+            tileGrid.GridToWorldPosition(targetGridPos);
+        targetPos.y += heightOffset;
+
+        float duration = stepDuration * 0.4f;
+        float t = 0f;
+
+        // Shrink
+        while (t < 1f)
+        {
+            t += Time.deltaTime / duration;
+            movingTransform.localScale =
+                Vector3.Lerp(originalScale, shrinkScale, t);
+            yield return null;
+        }
+
+        // Instant relocation
+        movingTransform.position = targetPos;
+
+        t = 0f;
+
+        // Grow back
+        while (t < 1f)
+        {
+            t += Time.deltaTime / duration;
+            movingTransform.localScale =
+                Vector3.Lerp(shrinkScale, originalScale, t);
+            yield return null;
+        }
+
+        movingTransform.localScale = originalScale;
+    }
+
+
     private IEnumerator MoveRoutine()
     {
         _isMoving = true;
@@ -160,77 +262,80 @@ public class CharacterMover : MonoBehaviour
                 yield break;
             }
 
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(stepPauseDuration);
+
         }
     }
+
+    private IEnumerator PlayVisual(
+    TileEffectVisual visual,
+    Transform movingTransform,
+    Vector2Int targetGridPos)
+    {
+        switch (visual)
+        {
+            case TileEffectVisual.Teleport:
+                yield return TeleportVisual(
+                    movingTransform,
+                    targetGridPos);
+                break;
+
+            case TileEffectVisual.Jump:
+                yield return JumpVisual(
+                    movingTransform,
+                    targetGridPos);
+                break;
+
+            default:
+                yield return DefaultMoveVisual(
+                    movingTransform,
+                    targetGridPos);
+                break;
+        }
+    }
+
 
     private IEnumerator MoveStep(Vector2Int targetGridPos, TileData tileData)
     {
         Transform movingTransform = _characterInstance != null ? _characterInstance.transform : transform;
 
-        Vector3 startPos = movingTransform.position;
-        Vector3 targetPos = tileGrid.GridToWorldPosition(targetGridPos);
-        targetPos.y += heightOffset;
-
-        float elapsedTime = 0f;
-
-        while (elapsedTime < stepDuration)
+        // Prepare context and resolve tile effect
+        TileEffectContext context = new TileEffectContext
         {
-            elapsedTime += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsedTime / stepDuration);
-            movingTransform.position = Vector3.Lerp(startPos, targetPos, t);
-            yield return null;
-        }
+            tileGrid = tileGrid,
+            position = targetGridPos,
+            direction = _moveDirection,
+            tileData = tileData
+        };
 
-        movingTransform.position = targetPos;
-        _currentGridPosition = targetGridPos;
+        TileEffectResult result = TileEffectResolver.Resolve(ref context);
 
-        Debug.Log($"[CharacterMover] Moved to {_currentGridPosition}");
+        _moveDirection = context.direction;
 
-        TileEffectResult result = TileEffectResolver.Resolve(
-            tileData.tileType,
-            ref _moveDirection,
-            _currentGridPosition
-        );
+        yield return StartCoroutine(
+            PlayVisual(context.visualEffect, movingTransform, context.position));
+
+        _currentGridPosition = context.position;
+
+        Debug.Log($"[CharacterMover] Finished moving to {_currentGridPosition}");
 
         switch (result)
         {
             case TileEffectResult.Win:
-                OnGoalReached?.Invoke();
                 _isMoving = false;
+                OnGoalReached?.Invoke();
                 break;
 
             case TileEffectResult.Fail:
-                OnMoveFailed?.Invoke();
                 _isMoving = false;
-                break;
-
-            case TileEffectResult.Teleport:
-                if (TileEffectResolver.FindTeleportPair(tileGrid, tileData.teleportID, _currentGridPosition, out Vector2Int pairPosition, out Vector2Int exitDirection))
-                {
-                    Debug.Log($"[CharacterMover] Teleporting from {_currentGridPosition} to {pairPosition}");
-                    
-                    _currentGridPosition = pairPosition;
-                    _moveDirection = exitDirection;
-                    
-                    Vector3 teleportPos = tileGrid.GridToWorldPosition(pairPosition);
-                    teleportPos.y += heightOffset;
-                    movingTransform.position = teleportPos;
-                    
-                    Debug.Log($"[CharacterMover] Teleported! New position: {_currentGridPosition}, New direction: {_moveDirection}");
-                }
-                else
-                {
-                    Debug.LogError($"[CharacterMover] Teleport failed - no pair found for ID {tileData.teleportID}");
-                    OnMoveFailed?.Invoke();
-                    _isMoving = false;
-                }
+                OnMoveFailed?.Invoke();
                 break;
 
             case TileEffectResult.Continue:
                 break;
         }
     }
+
 
     public Vector2Int GetCurrentPosition()
     {

@@ -1269,6 +1269,7 @@ MonoBehaviour:
   tileGrid: {fileID: 1054372550}
   stepDuration: 0.3
   heightOffset: 0.5
+  stepPauseDuration: 0.1
 --- !u!23 &1830525414
 MeshRenderer:
   m_ObjectHideFlags: 0

@@ -10,33 +10,33 @@ public enum TileEffectResult
 
 public static class TileEffectResolver
 {
-    public static TileEffectResult Resolve(TileType tileType, ref Vector2Int currentDirection, Vector2Int currentPosition)
+    public static TileEffectResult Resolve(ref TileEffectContext context)
     {
-        switch (tileType)
+        switch (context.tileData.tileType)
         {
             case TileType.Normal:
-                Debug.Log($"[TileEffectResolver] Normal tile at {currentPosition} - Continue");
+                Debug.Log($"[TileEffectResolver] Normal tile at {context.position} - Continue");
                 return TileEffectResult.Continue;
 
             case TileType.GoalTile:
-                Debug.Log($"[TileEffectResolver] Goal tile at {currentPosition} - Win!");
+                Debug.Log($"[TileEffectResolver] Goal tile at {context.position} - Win!");
                 return TileEffectResult.Win;
 
             case TileType.Block:
-                Debug.Log($"[TileEffectResolver] Block tile at {currentPosition} - Fail");
+                Debug.Log($"[TileEffectResolver] Block tile at {context.position} - Fail");
                 return TileEffectResult.Fail;
 
             case TileType.Empty:
-                Debug.Log($"[TileEffectResolver] Empty tile at {currentPosition} - Fail");
+                Debug.Log($"[TileEffectResolver] Empty tile at {context.position} - Fail");
                 return TileEffectResult.Fail;
 
             case TileType.Rotate90:
-                Debug.Log($"[TileEffectResolver] Rotate90 tile at {currentPosition} - Rotating direction");
-                currentDirection = RotateDirection90(currentDirection);
+                Debug.Log($"[TileEffectResolver] Rotate90 tile at {context.position} - Rotating direction");
+                context.direction = RotateDirection90(context.direction);
                 return TileEffectResult.Continue;
 
             case TileType.StartingTile:
-                Debug.Log($"[TileEffectResolver] Starting tile at {currentPosition} - Continue");
+                Debug.Log($"[TileEffectResolver] Starting tile at {context.position} - Continue");
                 return TileEffectResult.Continue;
 
             case TileType.Locked:
@@ -48,22 +48,41 @@ public static class TileEffectResolver
                 return TileEffectResult.Continue;
 
             case TileType.Teleport:
-                Debug.Log($"[TileEffectResolver] Teleport tile at {currentPosition} - Teleporting!");
-                return TileEffectResult.Teleport;
+                {
+                    Debug.Log($"[TileEffectResolver] Teleport triggered");
+
+                    if (FindTeleportPair(
+                        context.tileGrid,
+                        context.tileData.teleportID,
+                        context.position,
+                        out Vector2Int pairPosition,
+                        out Vector2Int exitDirection))
+                    {
+                        context.position = pairPosition;
+                        context.direction = exitDirection;
+
+                        context.visualEffect = TileEffectVisual.Teleport;
+
+                        return TileEffectResult.Continue;
+                    }
+
+                    return TileEffectResult.Fail;
+                }
+
 
             case TileType.Rotate90Left:
-                Debug.Log($"[TileEffectResolver] Rotate90Left tile at {currentPosition} - Rotating left (anticlockwise)");
-                currentDirection = RotateDirectionLeft(currentDirection);
+                Debug.Log($"[TileEffectResolver] Rotate90Left tile at {context.position} - Rotating left (anticlockwise)");
+                context.direction = RotateDirectionLeft(context.direction);
                 return TileEffectResult.Continue;
 
             case TileType.Rotate90Right:
-                Debug.Log($"[TileEffectResolver] Rotate90Right tile at {currentPosition} - Rotating right (clockwise)");
-                currentDirection = RotateDirectionRight(currentDirection);
+                Debug.Log($"[TileEffectResolver] Rotate90Right tile at {context.position} - Rotating right (clockwise)");
+                context.direction = RotateDirectionRight(context.direction);
                 return TileEffectResult.Continue;
 
             case TileType.Rotate180:
-                Debug.Log($"[TileEffectResolver] Rotate180 tile at {currentPosition} - Rotating 180°");
-                currentDirection = RotateDirection180(currentDirection);
+                Debug.Log($"[TileEffectResolver] Rotate180 tile at {context.position} - Rotating 180°");
+                context.direction = RotateDirection180(context.direction);
                 return TileEffectResult.Continue;
 
             case TileType.JumpForward:
@@ -87,7 +106,7 @@ public static class TileEffectResolver
                 return TileEffectResult.Continue;
 
             default:
-                Debug.LogWarning($"[TileEffectResolver] TileType '{tileType}' not recognized - treating as Normal");
+                Debug.LogWarning($"[TileEffectResolver] TileType '{context.tileData.tileType}' not recognized - treating as Normal");
                 return TileEffectResult.Continue;
         }
     }
@@ -118,7 +137,13 @@ public static class TileEffectResolver
         return new Vector2Int(-direction.x, -direction.y);
     }
 
-    public static bool FindTeleportPair(TileGrid tileGrid, int teleportID, Vector2Int currentPosition, out Vector2Int pairPosition, out Vector2Int exitDirection)
+    public static bool FindTeleportPair(
+    TileGrid tileGrid,
+    int teleportID,
+    Vector2Int currentPosition,
+    out Vector2Int pairPosition,
+    out Vector2Int exitDirection)
+
     {
         pairPosition = Vector2Int.zero;
         exitDirection = Vector2Int.right;
