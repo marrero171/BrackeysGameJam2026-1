@@ -59,6 +59,12 @@ public class BoardSwitcherUI : MonoBehaviour
 
     private void OnPreviousButtonClicked()
     {
+        if (PauseManager.Instance != null && PauseManager.Instance.IsPaused)
+        {
+            Debug.Log("[BoardSwitcherUI] Cannot switch board while paused");
+            return;
+        }
+
         if (BoardManager.Instance != null)
         {
             BoardManager.Instance.SwitchToPreviousBoard();
@@ -67,6 +73,12 @@ public class BoardSwitcherUI : MonoBehaviour
 
     private void OnNextButtonClicked()
     {
+        if (PauseManager.Instance != null && PauseManager.Instance.IsPaused)
+        {
+            Debug.Log("[BoardSwitcherUI] Cannot switch board while paused");
+            return;
+        }
+
         if (BoardManager.Instance != null)
         {
             BoardManager.Instance.SwitchToNextBoard();

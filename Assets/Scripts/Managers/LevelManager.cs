@@ -177,7 +177,17 @@ public class LevelManager : MonoBehaviour
         
         if (GameStateMachine.Instance != null)
         {
-            GameStateMachine.Instance.TransitionTo<State_Setup>();
+            IGameState currentState = GameStateMachine.Instance.CurrentState;
+            
+            if (currentState is State_Setup)
+            {
+                Debug.Log("[LevelManager] Board changed during Setup - NOT transitioning to Setup again");
+            }
+            else if (currentState is State_Playing || currentState is State_Transitioning)
+            {
+                Debug.Log("[LevelManager] Board changed during gameplay - transitioning to Setup");
+                GameStateMachine.Instance.TransitionTo<State_Setup>();
+            }
         }
     }
 
