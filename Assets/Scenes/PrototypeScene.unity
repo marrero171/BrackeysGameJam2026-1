@@ -4449,7 +4449,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelManager
   levels:
-  - {fileID: 11400000, guid: 261dc3c14995c6044b441d422b093225, type: 2}
+  - {fileID: 11400000, guid: db2908c189f86e246adc27af47ee188e, type: 2}
   - {fileID: 11400000, guid: 926e51fd050f0dc42a600dbfd18b2ba4, type: 2}
   - {fileID: 11400000, guid: 9d5065c3dc6cb834f9a26776696bc364, type: 2}
   - {fileID: 11400000, guid: 8ae104ffbdee0f643a4b91bbb2690973, type: 2}
@@ -4458,7 +4458,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: cd4225cdadeb3c248a9de1ea4103b0c7, type: 2}
   - {fileID: 11400000, guid: 329a17b4f6ecd6840a302cf444cfa4b0, type: 2}
   - {fileID: 11400000, guid: a670da24bae9484489f16eb3be80e12a, type: 2}
-  - {fileID: 11400000, guid: a670da24bae9484489f16eb3be80e12a, type: 2}
+  - {fileID: 11400000, guid: 261dc3c14995c6044b441d422b093225, type: 2}
   startingLevelIndex: 0
   boardManager: {fileID: 195240635}
 --- !u!1 &1861805482
@@ -4777,7 +4777,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -63.44}
+  m_AnchoredPosition: {x: 0, y: -63.440002}
   m_SizeDelta: {x: 0, y: 126.88}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2117503105
