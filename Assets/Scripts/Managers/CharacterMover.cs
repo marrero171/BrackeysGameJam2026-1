@@ -71,20 +71,40 @@ public class CharacterMover : MonoBehaviour
     {
         StopMoving();
         DespawnCharacter();
-        
+
         if (LevelManager.Instance == null || LevelManager.Instance.CurrentLevelData == null)
         {
             Debug.LogError("[CharacterMover] LevelManager or LevelData not found!");
             return;
         }
 
-        LevelData levelData = LevelManager.Instance.CurrentLevelData;
+        // Resolve starting tile from the scene object LevelManager already found.
+        GameObject startingTileObject = LevelManager.Instance.StartingTileObject;
+        if (startingTileObject == null)
+        {
+            Debug.LogError("[CharacterMover] No starting tile object found in current level!");
+            return;
+        }
 
-        _currentBoardIndex = levelData.startingTile.boardIndex;
-        _currentGridPosition = levelData.startingTile.position;
+        TileBase startingTileBase = startingTileObject.GetComponent<TileBase>();
+        if (startingTileBase == null)
+        {
+            Debug.LogError("[CharacterMover] Starting tile object has no TileBase component!");
+            return;
+        }
+
+        Board owningBoard = startingTileObject.GetComponentInParent<Board>();
+        if (owningBoard == null)
+        {
+            Debug.LogError("[CharacterMover] Starting tile has no parent Board!");
+            return;
+        }
+
+        _currentBoardIndex = owningBoard.BoardIndex;
+        _currentGridPosition = startingTileBase.gridPosition;
         _moveDirection = new Vector2Int(
-            (int)levelData.characterStartDirection.x,
-            (int)levelData.characterStartDirection.z
+            (int)LevelManager.Instance.CurrentLevelData.characterStartDirection.x,
+            (int)LevelManager.Instance.CurrentLevelData.characterStartDirection.z
         );
 
         if (BoardManager.Instance == null)

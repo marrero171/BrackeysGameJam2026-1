@@ -126,7 +126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c259be9809441d6489b43197817ced27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TileBase
-  tileData: {fileID: 11400000, guid: d71d181de83f34143b5a6b4a6bd3dfea, type: 2}
+  tileData: {fileID: 11400000, guid: 7d2723636a9275b479ee0949131194d0, type: 2}
   gridPosition: {x: 0, y: 0}
 --- !u!1 &7768417719628934433
 GameObject:

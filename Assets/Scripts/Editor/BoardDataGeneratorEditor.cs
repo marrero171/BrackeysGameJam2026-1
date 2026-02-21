@@ -6,8 +6,6 @@ using System.Linq;
 [CustomEditor(typeof(BoardDataGenerator))]
 public class BoardDataGeneratorEditor : Editor
 {
-    private TileInstanceData[] cachedSolvedTiles;
-    private bool hasCachedSolution = false;
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
@@ -168,8 +166,6 @@ public class BoardDataGeneratorEditor : Editor
         }
 
         Debug.Log($"Loaded {tilesToLoad.Length} tiles into scene.");
-        hasCachedSolution = false;
-        cachedSolvedTiles = null;
     }
 
     private void ClearBoard(BoardDataGenerator generator)

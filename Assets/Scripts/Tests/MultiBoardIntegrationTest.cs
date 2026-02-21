@@ -42,10 +42,10 @@ public class MultiBoardIntegrationTest : MonoBehaviour
             Debug.Log($"[IntegrationTest] Active Board Visible: {BoardManager.Instance.ActiveBoard.IsVisible}");
         }
 
-        Debug.Log($"[IntegrationTest] Starting Tile Position: {LevelManager.Instance.StartingTilePosition}");
-        Debug.Log($"[IntegrationTest] Goal Tile Position: {LevelManager.Instance.GoalTilePosition}");
-        Debug.Log($"[IntegrationTest] Starting Tile Object: {(LevelManager.Instance.StartingTileObject != null ? "✓" : "✗")}");
-        Debug.Log($"[IntegrationTest] Goal Tile Object: {(LevelManager.Instance.GoalTileObject != null ? "✓" : "✗")}");
+        GameObject startingTile = LevelManager.Instance.StartingTileObject;
+        TileBase startingTileBase = startingTile != null ? startingTile.GetComponent<TileBase>() : null;
+        Debug.Log($"[IntegrationTest] Starting Tile Position: {(startingTileBase != null ? startingTileBase.gridPosition.ToString() : "not found")}");
+        Debug.Log($"[IntegrationTest] Starting Tile Object: {(startingTile != null ? "Found" : "Not found")}");
 
         TestBoardSwitching();
 

@@ -12,7 +12,7 @@ public class LevelDebugUI : MonoBehaviour
         if (LevelManager.Instance != null)
         {
             LevelManager.Instance.OnLevelLoaded += UpdateUI;
-            LevelManager.Instance.OnSpecialTilesDetected += OnTilesDetected;
+            LevelManager.Instance.OnStartingTileDetected += OnTilesDetected;
         }
     }
 
@@ -21,7 +21,7 @@ public class LevelDebugUI : MonoBehaviour
         if (LevelManager.Instance != null)
         {
             LevelManager.Instance.OnLevelLoaded -= UpdateUI;
-            LevelManager.Instance.OnSpecialTilesDetected -= OnTilesDetected;
+            LevelManager.Instance.OnStartingTileDetected -= OnTilesDetected;
         }
     }
 
@@ -46,26 +46,21 @@ public class LevelDebugUI : MonoBehaviour
 
         string info = $"Level: {levelIndex} ({levelData.levelId})\n";
         info += $"Board: {LevelManager.Instance.CurrentBoardIndex}/{levelData.boards.Length - 1}\n";
-        info += $"Starting Tile Board: {levelData.startingTile.boardIndex}\n";
-        info += $"Goal Tile Board: {levelData.goalTile.boardIndex}";
 
         levelInfoText.text = info;
     }
 
-    private void OnTilesDetected(GameObject startTile, GameObject goalTile)
+    private void OnTilesDetected(GameObject startTile)
     {
-        if (tilesInfoText == null)
-        {
-            return;
-        }
+        if (tilesInfoText == null) return;
+
+        TileBase startingTileBase = startTile != null ? startTile.GetComponent<TileBase>() : null;
 
         string info = "Special Tiles:\n";
-        info += $"Start: {(startTile != null ? "✓ Found" : "✗ Not in current board")}\n";
-        info += $"Goal: {(goalTile != null ? "✓ Found" : "✗ Not in current board")}";
+        info += $"Start: {(startTile != null ? $"✓ Found at {startingTileBase?.gridPosition}" : "✗ Not found")}";
 
         tilesInfoText.text = info;
-
-        Debug.Log($"[LevelDebugUI] Tiles detected - Start: {startTile?.name}, Goal: {goalTile?.name}");
+        Debug.Log($"[LevelDebugUI] Tiles detected - Start: {startTile?.name}");
     }
 
     private void Update()
