@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 7940673010139988929}
   - component: {fileID: 1506065513251643100}
   - component: {fileID: 3215568663905698800}
-  - component: {fileID: 5567170443244056785}
+  - component: {fileID: 2916712925476936642}
   m_Layer: 0
-  m_Name: 0 Empty Tile
+  m_Name: Goal Tile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -90,7 +90,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d71f3bed474897f49a9f09f1699a4f17, type: 2}
+  - {fileID: 2100000, guid: 047da26b252989b4cbf45eefbd2d4f75, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -114,7 +114,7 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &5567170443244056785
+--- !u!114 &2916712925476936642
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -126,7 +126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c259be9809441d6489b43197817ced27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TileBase
-  tileData: {fileID: 11400000, guid: ebd2cf53b39160e4388fc10fa2658503, type: 2}
+  tileData: {fileID: 11400000, guid: 87aa03d38bb66ea4a9be8924cca8dff2, type: 2}
   gridPosition: {x: 0, y: 0}
 --- !u!1 &7768417719628934433
 GameObject:

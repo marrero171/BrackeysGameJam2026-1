@@ -18,7 +18,7 @@ MonoBehaviour:
   isNotJumpable: 0
   prefab: {fileID: 2494740354578921905, guid: 1999b2b209cb55846b3741e4d8a702d6, type: 3}
   material: {fileID: 2100000, guid: 18e6acd8990f7254ab64d4405b4a0ca1, type: 2}
-  highlightColor: {r: 0.3, g: 0.6, b: 1, a: 1}
+  highlightColor: {r: 0.5235849, g: 1, b: 0.97595173, a: 1}
   jumpDistance: 1
-  teleportID: 0
+  teleportID: -1
   exitDirection: {x: 1, y: 0}
