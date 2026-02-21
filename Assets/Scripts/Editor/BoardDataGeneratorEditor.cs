@@ -6,6 +6,8 @@ using System.Linq;
 [CustomEditor(typeof(BoardDataGenerator))]
 public class BoardDataGeneratorEditor : Editor
 {
+    private TileInstanceData[] cachedSolvedTiles;
+    private bool hasCachedSolution = false;
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
@@ -25,10 +27,26 @@ public class BoardDataGeneratorEditor : Editor
             LoadBoard(generator);
         }
 
+        GUILayout.Space(10);
+
+        if (GUILayout.Button("Scramble Non-Locked Tiles"))
+        {
+            Scramble(generator);
+        }
+
+        if (GUILayout.Button("Restore Cached Solution"))
+        {
+            RestoreCached(generator);
+        }
+
+        GUILayout.Space(10);
+
         if (GUILayout.Button("Clear Board From Scene"))
         {
             ClearBoard(generator);
         }
+
+        
     }
 
     private void Generate(BoardDataGenerator generator)
@@ -222,5 +240,105 @@ public class BoardDataGeneratorEditor : Editor
 
         foreach (GameObject obj in toDelete)
             Object.DestroyImmediate(obj);
+    }
+
+    private void Scramble(BoardDataGenerator generator)
+    {
+        if (generator.targetBoardData == null)
+        {
+            Debug.LogError("No BoardData assigned.");
+            return;
+        }
+
+        Transform root =
+            generator.tileRoot != null
+            ? generator.tileRoot
+            : generator.transform;
+
+        TileBase[] tiles =
+            root.GetComponentsInChildren<TileBase>();
+
+        if (tiles.Length == 0)
+        {
+            Debug.LogWarning("No tiles in scene.");
+            return;
+        }
+
+        // ---------- CACHE SOLUTION ----------
+        if (!hasCachedSolution)
+        {
+            cachedSolvedTiles =
+                generator.targetBoardData.tiles
+                .Select(t => new TileInstanceData()
+                {
+                    tileData = t.tileData,
+                    gridPosition = t.gridPosition,
+                    rotation = t.rotation
+                })
+                .ToArray();
+
+            hasCachedSolution = true;
+
+            Debug.Log("Solved layout cached.");
+        }
+
+        // ---------- COLLECT MOVABLE ----------
+        List<TileBase> movable =
+            tiles
+            .Where(t => !t.tileData.isLocked)
+            .ToList();
+
+        if (movable.Count <= 1)
+            return;
+
+        List<Vector3> positions =
+            movable.Select(t => t.transform.position).ToList();
+
+        // Fisher–Yates shuffle
+        for (int i = positions.Count - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+            (positions[i], positions[j]) =
+                (positions[j], positions[i]);
+        }
+
+        Undo.RecordObjects(
+            movable.Select(t => t.transform).ToArray(),
+            "Scramble Tiles"
+        );
+
+        for (int i = 0; i < movable.Count; i++)
+        {
+            movable[i].transform.position = positions[i];
+        }
+
+        Debug.Log($"Scrambled {movable.Count} tiles.");
+    }
+
+    private void RestoreCached(BoardDataGenerator generator)
+    {
+        if (!hasCachedSolution ||
+            cachedSolvedTiles == null)
+        {
+            Debug.LogWarning("No cached solution.");
+            return;
+        }
+
+        generator.targetBoardData.tiles =
+            cachedSolvedTiles
+            .Select(t => new TileInstanceData()
+            {
+                tileData = t.tileData,
+                gridPosition = t.gridPosition,
+                rotation = t.rotation
+            })
+            .ToArray();
+
+        EditorUtility.SetDirty(generator.targetBoardData);
+        AssetDatabase.SaveAssets();
+
+        LoadBoard(generator);
+
+        Debug.Log("Solved layout restored.");
     }
 }
