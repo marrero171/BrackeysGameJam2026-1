@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56302636697ccde4ca65f26a9c8672e3, type: 3}
+  m_Name: 0 Goal Tile Data
+  m_EditorClassIdentifier: Assembly-CSharp::TileData
+  tileType: 15
+  isLocked: 1
+  isWalkable: 1
+  isNotJumpable: 0
+  prefab: {fileID: 2494740354578921905, guid: 7599c4f47822b824893c5f582c63bb24, type: 3}
+  material: {fileID: 2100000, guid: 047da26b252989b4cbf45eefbd2d4f75, type: 2}
+  highlightColor: {r: 0.6886792, g: 0.6056313, b: 0.21115166, a: 1}
+  jumpDistance: 1
+  teleportID: 0
+  exitDirection: {x: 1, y: 0}
