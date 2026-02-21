@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56302636697ccde4ca65f26a9c8672e3, type: 3}
   m_Name: Test Starting Tile Data
   m_EditorClassIdentifier: Assembly-CSharp::TileData
-  tileType: 15
+  tileType: 14
   isLocked: 1
   isWalkable: 1
   isNotJumpable: 0
