@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelData
   levelId: 0
   boards:
-  - {fileID: 11400000, guid: 4aebfd8c21d050f469e5e57bebd27c14, type: 2}
-  - {fileID: 11400000, guid: 996defd4f89439f42aa191e5fcab53ca, type: 2}
+  - {fileID: 11400000, guid: b11bc514dabba1a42b2c3a0de10e1895, type: 2}
   startingTile:
     boardIndex: 0
     position: {x: 0, y: 3}

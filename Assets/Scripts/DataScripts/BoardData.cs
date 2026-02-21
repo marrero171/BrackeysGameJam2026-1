@@ -9,4 +9,5 @@ public class BoardData : ScriptableObject
     public TileInstanceData[] tiles;
     // For the level editor baker
     public Vector2Int worldOrigin;
+    public TileInstanceData[] solvedTiles;
 }

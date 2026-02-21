@@ -4408,9 +4408,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelManager
   levels:
-  - {fileID: 11400000, guid: c1dbbf6ded4de4d4fa28905c996ca6d6, type: 2}
-  - {fileID: 11400000, guid: 926e51fd050f0dc42a600dbfd18b2ba4, type: 2}
-  - {fileID: 11400000, guid: 9d5065c3dc6cb834f9a26776696bc364, type: 2}
+  - {fileID: 11400000, guid: db2908c189f86e246adc27af47ee188e, type: 2}
   startingLevelIndex: 0
   boardManager: {fileID: 195240635}
 --- !u!1 &1861805482
