@@ -12,6 +12,11 @@ public class BoardSwitcherStateController : MonoBehaviour
             GameStateMachine.Instance.OnStateChanged += OnGameStateChanged;
         }
 
+        if (PauseManager.Instance != null)
+        {
+            PauseManager.Instance.OnPauseStateChanged += OnPauseStateChanged;
+        }
+
         if (boardSwitcherUI == null)
         {
             boardSwitcherUI = GetComponent<BoardSwitcherUI>();
@@ -26,9 +31,19 @@ public class BoardSwitcherStateController : MonoBehaviour
         {
             GameStateMachine.Instance.OnStateChanged -= OnGameStateChanged;
         }
+
+        if (PauseManager.Instance != null)
+        {
+            PauseManager.Instance.OnPauseStateChanged -= OnPauseStateChanged;
+        }
     }
 
     private void OnGameStateChanged(IGameState newState)
+    {
+        UpdateVisibility();
+    }
+
+    private void OnPauseStateChanged(bool isPaused)
     {
         UpdateVisibility();
     }
@@ -40,7 +55,10 @@ public class BoardSwitcherStateController : MonoBehaviour
 
         IGameState currentState = GameStateMachine.Instance.CurrentState;
 
-        if (currentState is State_Setup)
+        bool shouldShow = currentState is State_Setup || 
+                         (PauseManager.Instance != null && PauseManager.Instance.IsPaused);
+
+        if (shouldShow)
         {
             boardSwitcherUI.Show();
         }
