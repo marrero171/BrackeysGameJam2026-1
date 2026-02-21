@@ -1205,7 +1205,7 @@ Transform:
   m_GameObject: {fileID: 913387756}
   serializedVersion: 2
   m_LocalRotation: {x: 0.23911761, y: 0.36964384, z: -0.09904577, w: 0.8923991}
-  m_LocalPosition: {x: -10.499724, y: 9.244234, z: -10.117321}
+  m_LocalPosition: {x: -10.191067, y: 9.835323, z: -9.943356}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1373,7 +1373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 612eb34659cec104cbde240c5ee628fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TileGrid
-  boardData: {fileID: 11400000, guid: 996defd4f89439f42aa191e5fcab53ca, type: 2}
+  boardData: {fileID: 11400000, guid: 4aebfd8c21d050f469e5e57bebd27c14, type: 2}
   tileSpacing: 1
 --- !u!4 &1054372551
 Transform:
@@ -1686,7 +1686,7 @@ MonoBehaviour:
   previousButton: {fileID: 67588217}
   nextButton: {fileID: 917754589}
   boardInfoText: {fileID: 0}
-  startHidden: 0
+  startHidden: 1
 --- !u!114 &1267557581
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2087,7 +2087,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e79eb72401da24d409dfef9ab1680463, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelManager
-  levelData: {fileID: 11400000, guid: db2908c189f86e246adc27af47ee188e, type: 2}
+  levelData: {fileID: 11400000, guid: a872691de7400fb4986baaadf225d9c4, type: 2}
   boardManager: {fileID: 195240635}
 --- !u!1 &1861805482
 GameObject:

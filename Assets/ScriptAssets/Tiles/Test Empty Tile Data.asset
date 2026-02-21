@@ -10,12 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 56302636697ccde4ca65f26a9c8672e3, type: 3}
-  m_Name: Empty Tile Data
+  m_Name: Test Empty Tile Data
   m_EditorClassIdentifier: Assembly-CSharp::TileData
   tileType: 0
   isLocked: 0
   isWalkable: 0
-  prefab: {fileID: 2494740354578921905, guid: 9d1c5c0107a63814eaf7b142e27332f0, type: 3}
+  isNotJumpable: 0
+  prefab: {fileID: 2494740354578921905, guid: 9874612bf6c4ac2428346e8c37a1d87e, type: 3}
+  material: {fileID: 0}
   highlightColor: {r: 0.3, g: 0.3, b: 0.3, a: 1}
+  jumpDistance: 1
   teleportID: 0
   exitDirection: {x: 1, y: 0}

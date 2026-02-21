@@ -16,51 +16,52 @@ MonoBehaviour:
   boardIndex: 0
   gridSize: {x: 4, y: 4}
   tiles:
-  - tileData: {fileID: 11400000, guid: d71d181de83f34143b5a6b4a6bd3dfea, type: 2}
-    gridPosition: {x: 0, y: 0}
-    rotation: 0
-  - tileData: {fileID: 11400000, guid: b1cf394dba0d57c4991cdd53b2437d5d, type: 2}
-    gridPosition: {x: 1, y: 0}
-    rotation: 0
-  - tileData: {fileID: 11400000, guid: 29754ccb68144c046b80a456c7c51b3c, type: 2}
-    gridPosition: {x: 2, y: 0}
-    rotation: 0
-  - tileData: {fileID: 11400000, guid: 859ad38ac4609454e90053831e902b78, type: 2}
-    gridPosition: {x: 3, y: 0}
-    rotation: 0
-  - tileData: {fileID: 11400000, guid: ccea6a554b2bc714f99ed58997b1fe75, type: 2}
-    gridPosition: {x: 0, y: 1}
-    rotation: 0
-  - tileData: {fileID: 11400000, guid: 859ad38ac4609454e90053831e902b78, type: 2}
-    gridPosition: {x: 1, y: 1}
-    rotation: 0
-  - tileData: {fileID: 11400000, guid: 314cfbed8a8b0d5479e88455a4405c31, type: 2}
-    gridPosition: {x: 2, y: 1}
-    rotation: 0
   - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
-    gridPosition: {x: 3, y: 1}
-    rotation: 0
-  - tileData: {fileID: 11400000, guid: 29754ccb68144c046b80a456c7c51b3c, type: 2}
-    gridPosition: {x: 0, y: 2}
-    rotation: 0
-  - tileData: {fileID: 11400000, guid: 314cfbed8a8b0d5479e88455a4405c31, type: 2}
-    gridPosition: {x: 1, y: 2}
-    rotation: 0
-  - tileData: {fileID: 11400000, guid: ccea6a554b2bc714f99ed58997b1fe75, type: 2}
-    gridPosition: {x: 2, y: 2}
+    gridPosition: {x: 1, y: 3}
     rotation: 0
   - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
     gridPosition: {x: 3, y: 2}
     rotation: 0
   - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
+    gridPosition: {x: 3, y: 1}
+    rotation: 0
+  - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
+    gridPosition: {x: 1, y: 0}
+    rotation: 0
+  - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
+    gridPosition: {x: 0, y: 1}
+    rotation: 0
+  - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
+    gridPosition: {x: 0, y: 2}
+    rotation: 0
+  - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
+    gridPosition: {x: 1, y: 2}
+    rotation: 0
+  - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
+    gridPosition: {x: 2, y: 2}
+    rotation: 0
+  - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
+    gridPosition: {x: 2, y: 1}
+    rotation: 0
+  - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
+    gridPosition: {x: 1, y: 1}
+    rotation: 0
+  - tileData: {fileID: 11400000, guid: ebd2cf53b39160e4388fc10fa2658503, type: 2}
+    gridPosition: {x: 0, y: 0}
+    rotation: 0
+  - tileData: {fileID: 11400000, guid: d71d181de83f34143b5a6b4a6bd3dfea, type: 2}
     gridPosition: {x: 0, y: 3}
     rotation: 0
   - tileData: {fileID: 11400000, guid: 314cfbed8a8b0d5479e88455a4405c31, type: 2}
-    gridPosition: {x: 1, y: 3}
-    rotation: 0
-  - tileData: {fileID: 11400000, guid: 84c6958a3325f4b40a6e941b532ce23f, type: 2}
     gridPosition: {x: 2, y: 3}
+    rotation: 0
+  - tileData: {fileID: 11400000, guid: 859ad38ac4609454e90053831e902b78, type: 2}
+    gridPosition: {x: 2, y: 0}
+    rotation: 0
+  - tileData: {fileID: 11400000, guid: 859ad38ac4609454e90053831e902b78, type: 2}
+    gridPosition: {x: 3, y: 0}
     rotation: 0
   - tileData: {fileID: 11400000, guid: 87aa03d38bb66ea4a9be8924cca8dff2, type: 2}
     gridPosition: {x: 3, y: 3}
     rotation: 0
+  worldOrigin: {x: 0, y: -3}

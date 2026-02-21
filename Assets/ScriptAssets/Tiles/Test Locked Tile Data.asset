@@ -16,7 +16,7 @@ MonoBehaviour:
   isLocked: 1
   isWalkable: 0
   isNotJumpable: 1
-  prefab: {fileID: 2494740354578921905, guid: 9d1c5c0107a63814eaf7b142e27332f0, type: 3}
+  prefab: {fileID: 2494740354578921905, guid: f66f53b5da5270444a671583fe3ccfc6, type: 3}
   material: {fileID: 2100000, guid: 78e95ed7ea479b242b9284cc6a7f25af, type: 2}
   highlightColor: {r: 1, g: 0.2, b: 0.2, a: 1}
   jumpDistance: 1

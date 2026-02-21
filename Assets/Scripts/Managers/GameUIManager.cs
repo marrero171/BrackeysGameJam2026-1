@@ -57,7 +57,18 @@ public class GameUIManager : MonoBehaviour
         {
             _playButtonComponent.interactable = false;
         }
-        
+
+        CharacterMover characterMover = FindAnyObjectByType<CharacterMover>();
+        if (characterMover != null && BoardManager.Instance != null)
+        {
+            int characterBoard = characterMover.GetCurrentBoardIndex();
+            if (BoardManager.Instance.ActiveBoardIndex != characterBoard)
+            {
+                BoardManager.Instance.SetActiveBoard(characterBoard);
+                Debug.Log($"[GameUIManager] Switched to character's board {characterBoard} on Play");
+            }
+        }
+
         GameStateMachine.Instance?.TransitionTo<State_Playing>();
     }
 

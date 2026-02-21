@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 56302636697ccde4ca65f26a9c8672e3, type: 3}
-  m_Name: Goal Tile Data
+  m_Name: Test Goal Tile Data
   m_EditorClassIdentifier: Assembly-CSharp::TileData
   tileType: 15
   isLocked: 1
   isWalkable: 1
   isNotJumpable: 0
-  prefab: {fileID: 2494740354578921905, guid: 9d1c5c0107a63814eaf7b142e27332f0, type: 3}
+  prefab: {fileID: 2494740354578921905, guid: 7599c4f47822b824893c5f582c63bb24, type: 3}
   material: {fileID: 2100000, guid: 047da26b252989b4cbf45eefbd2d4f75, type: 2}
   highlightColor: {r: 0.6886792, g: 0.6056313, b: 0.21115166, a: 1}
   jumpDistance: 1

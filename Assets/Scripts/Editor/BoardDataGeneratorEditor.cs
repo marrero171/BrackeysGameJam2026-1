@@ -19,6 +19,16 @@ public class BoardDataGeneratorEditor : Editor
         {
             Generate(generator);
         }
+
+        if (GUILayout.Button("Load Board Into Scene"))
+        {
+            LoadBoard(generator);
+        }
+
+        if (GUILayout.Button("Clear Board From Scene"))
+        {
+            ClearBoard(generator);
+        }
     }
 
     private void Generate(BoardDataGenerator generator)
@@ -91,6 +101,7 @@ public class BoardDataGeneratorEditor : Editor
             );
 
         generator.targetBoardData.gridSize = size;
+        generator.targetBoardData.worldOrigin = new Vector2Int(minX, minY);
 
         // normalize positions so array starts at 0,0
         List<TileInstanceData> finalTiles = new();
@@ -114,5 +125,102 @@ public class BoardDataGeneratorEditor : Editor
         Debug.Log(
             $"Board generated. Tiles: {finalTiles.Count}"
         );
+    }
+
+    private void LoadBoard(BoardDataGenerator generator)
+    {
+        if (generator.targetBoardData == null)
+        {
+            Debug.LogError("No BoardData assigned.");
+            return;
+        }
+
+        Transform root =
+            generator.tileRoot != null
+            ? generator.tileRoot
+            : generator.transform;
+
+
+        List<GameObject> toDelete = new();
+
+        foreach (Transform child in root)
+            toDelete.Add(child.gameObject);
+
+        foreach (GameObject obj in toDelete)
+            Object.DestroyImmediate(obj);
+
+
+        BoardData boardData = generator.targetBoardData;
+
+        if (boardData.tiles == null ||
+            boardData.tiles.Length == 0)
+        {
+            Debug.LogWarning("BoardData has no tiles.");
+            return;
+        }
+
+        float cellSize = generator.cellSize;
+        Vector2 offset = generator.worldOffset;
+
+        foreach (TileInstanceData tile in boardData.tiles)
+        {
+            if (tile.tileData == null)
+                continue;
+
+            GameObject prefab = tile.tileData.prefab;
+
+            GameObject tileGO;
+
+            if (prefab != null)
+            {
+                tileGO =
+                    (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+            }
+            else
+            {
+                tileGO = new GameObject(tile.tileData.name);
+            }
+
+            tileGO.transform.SetParent(root);
+
+
+
+            Vector3 worldPos = new Vector3(
+                (tile.gridPosition.x + boardData.worldOrigin.x) * cellSize + offset.x,0f,
+                 (tile.gridPosition.y + boardData.worldOrigin.y) * cellSize + offset.y);
+
+            tileGO.transform.position = worldPos;
+            tileGO.transform.rotation =
+                Quaternion.Euler(0, tile.rotation, 0);
+
+            // Ensure TileBase exists
+            TileBase tileBase =
+                tileGO.GetComponent<TileBase>();
+
+            if (tileBase == null)
+                tileBase = tileGO.AddComponent<TileBase>();
+
+            tileBase.tileData = tile.tileData;
+            tileBase.gridPosition = tile.gridPosition;
+        }
+
+        Debug.Log(
+            $"Loaded {boardData.tiles.Length} tiles into scene.");
+    }
+
+    private void ClearBoard(BoardDataGenerator generator)
+    {
+        Transform root =
+            generator.tileRoot != null
+            ? generator.tileRoot
+            : generator.transform;
+
+        List<GameObject> toDelete = new();
+
+        foreach (Transform child in root)
+            toDelete.Add(child.gameObject);
+
+        foreach (GameObject obj in toDelete)
+            Object.DestroyImmediate(obj);
     }
 }

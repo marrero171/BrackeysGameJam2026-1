@@ -6,5 +6,7 @@ public class BoardData : ScriptableObject
     public string boardId;
     public int boardIndex;
     public Vector2Int gridSize = new Vector2Int(10, 10);
-    public TileInstanceData[] tiles;  
+    public TileInstanceData[] tiles;
+    // For the level editor baker
+    public Vector2Int worldOrigin;
 }
