@@ -3,9 +3,6 @@ using UnityEngine;
 
 public class CharacterMover : MonoBehaviour
 {
-    [Header("References")]
-    [SerializeField] private GameObject characterPrefab;
-
     [Header("Movement Settings")]
     [SerializeField] private float stepDuration = 0.3f;
     [SerializeField] private float heightOffset = 0.5f;
@@ -26,10 +23,17 @@ public class CharacterMover : MonoBehaviour
     private Vector2Int _currentGridPosition;
     private Vector2Int _moveDirection;
     private Coroutine _moveCoroutine;
+    private Coroutine _rotationCoroutine;
     private bool _isMoving = false;
 
     private void Awake()
     {
+        // Use the first child as the character instance.
+        if (transform.childCount > 0)
+            _characterInstance = transform.GetChild(0).gameObject;
+        else
+            Debug.LogError("[CharacterMover] No child object found to use as character!");
+
         OnGoalReached += HandleGoalReached;
         OnMoveFailed += HandleMoveFailed;
     }
@@ -59,6 +63,7 @@ public class CharacterMover : MonoBehaviour
                   $"Character on board {_currentBoardIndex} → " +
                   $"{(onActiveBoard ? "visible" : "hidden")}");
     }
+
     private void SetCharacterVisible(bool visible)
     {
         if (_characterInstance == null) return;
@@ -67,10 +72,41 @@ public class CharacterMover : MonoBehaviour
             r.enabled = visible;
     }
 
+    private void UpdateCharacterRotation()
+    {
+        if (_characterInstance == null) return;
+        if (_moveDirection == Vector2Int.zero) return;
+
+        Vector3 worldDir = new Vector3(_moveDirection.x, 0f, _moveDirection.y);
+        Quaternion targetRotation = Quaternion.LookRotation(worldDir, Vector3.up);
+
+        if (_rotationCoroutine != null)
+            StopCoroutine(_rotationCoroutine);
+
+        _rotationCoroutine = StartCoroutine(SmoothRotate(targetRotation));
+    }
+
+    private IEnumerator SmoothRotate(Quaternion targetRotation)
+    {
+        Transform t = _characterInstance.transform;
+
+        while (Quaternion.Angle(t.rotation, targetRotation) > 0.1f)
+        {
+            t.rotation = Quaternion.RotateTowards(
+                t.rotation,
+                targetRotation,
+                360f * Time.deltaTime / stepDuration
+            );
+            yield return null;
+        }
+
+        t.rotation = targetRotation;
+        _rotationCoroutine = null;
+    }
+
     public void SpawnCharacter()
     {
         StopMoving();
-        DespawnCharacter();
 
         if (LevelManager.Instance == null || LevelManager.Instance.CurrentLevelData == null)
         {
@@ -129,32 +165,32 @@ public class CharacterMover : MonoBehaviour
         Vector3 spawnWorldPos = targetBoard.TileGrid.GridToWorldPosition(_currentGridPosition);
         spawnWorldPos.y += heightOffset;
 
-        if (characterPrefab != null)
+        if (_characterInstance == null)
         {
-            _characterInstance = Instantiate(characterPrefab, spawnWorldPos, Quaternion.identity, transform);
-            Debug.Log($"[CharacterMover] Character spawned from prefab at board {_currentBoardIndex}, position {_currentGridPosition}");
+            Debug.LogError("[CharacterMover] No character instance (child) to position!");
+            return;
         }
-        else
-        {
-            transform.position = spawnWorldPos;
-            _characterInstance = gameObject;
-            Debug.Log($"[CharacterMover] Character positioned (no prefab) at board {_currentBoardIndex}, position {_currentGridPosition}");
-        }
+
+        _characterInstance.transform.position = spawnWorldPos;
 
         bool onActiveBoard = (BoardManager.Instance.ActiveBoardIndex == _currentBoardIndex);
         SetCharacterVisible(onActiveBoard);
 
+        // Snap instantly on spawn rather than smoothly rotating from a stale direction.
+        if (_moveDirection != Vector2Int.zero)
+        {
+            Vector3 worldDir = new Vector3(_moveDirection.x, 0f, _moveDirection.y);
+            _characterInstance.transform.rotation = Quaternion.LookRotation(worldDir, Vector3.up);
+        }
+
         Debug.Log($"[CharacterMover] Character fully initialized - Board: {_currentBoardIndex}, Position: {_currentGridPosition}, Direction: {_moveDirection}, Visible: {onActiveBoard}");
     }
 
+    // Kept for API compatibility; nothing to destroy since the child is persistent.
     public void DespawnCharacter()
     {
-        if (_characterInstance != null && _characterInstance != gameObject)
-        {
-            Destroy(_characterInstance);
-            _characterInstance = null;
-            Debug.Log("[CharacterMover] Character despawned");
-        }
+        SetCharacterVisible(false);
+        Debug.Log("[CharacterMover] Character despawned (hidden)");
     }
 
     private void HandleGoalReached()
@@ -191,8 +227,9 @@ public class CharacterMover : MonoBehaviour
             StopCoroutine(_moveCoroutine);
             _moveCoroutine = null;
         }
-        
+
         StopAllCoroutines();
+        _rotationCoroutine = null;
         _isMoving = false;
         Debug.Log("[CharacterMover] Stopped moving - all coroutines stopped");
     }
@@ -330,6 +367,9 @@ public class CharacterMover : MonoBehaviour
                 yield break;
             }
 
+            // Rotate to face the direction we're about to move.
+            UpdateCharacterRotation();
+
             yield return StartCoroutine(MoveStep(nextPosition, tileBase.tileData));
 
             if (!_isMoving)
@@ -338,7 +378,6 @@ public class CharacterMover : MonoBehaviour
             }
 
             yield return new WaitForSeconds(stepPauseDuration);
-
         }
     }
 
@@ -425,17 +464,20 @@ public class CharacterMover : MonoBehaviour
 
             _moveDirection = context.direction;
 
+            // If direction changed (e.g. turn tile), update rotation smoothly.
+            UpdateCharacterRotation();
+
             if (context.switchedBoard && context.targetBoardIndex != -1)
             {
                 Debug.Log($"[CharacterMover] Portal used! Switching from board {_currentBoardIndex} to {context.targetBoardIndex}");
-                
+
                 _currentBoardIndex = context.targetBoardIndex;
-                
+
                 if (BoardManager.Instance != null)
                 {
                     BoardManager.Instance.SetActiveBoard(_currentBoardIndex, false);
                 }
-                
+
                 SetCharacterVisible(true);
             }
 
@@ -489,6 +531,7 @@ public class CharacterMover : MonoBehaviour
     public void SetDirection(Vector2Int newDirection)
     {
         _moveDirection = newDirection;
+        UpdateCharacterRotation();
         Debug.Log($"[CharacterMover] Direction changed to {_moveDirection}");
     }
 }
