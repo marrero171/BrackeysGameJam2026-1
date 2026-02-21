@@ -2,7 +2,7 @@
 - Project name: BrackeysGameJam
 - Unity version: Unity 6000.3.8f1
 - Active game object:
-  - Name: LevelManager
+  - Name: Tilemap
   - Tag: Untagged
   - Layer: Default
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->
