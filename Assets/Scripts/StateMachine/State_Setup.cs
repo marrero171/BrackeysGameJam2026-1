@@ -32,8 +32,9 @@ public class State_Setup : IGameState
         if (_uiManager != null)
         {
             _uiManager.ShowPlayButton();
-            _uiManager.HideWinText();
-            _uiManager.HideFailText();
+            _uiManager.HideWinPanel();
+            _uiManager.HideFailPanel();
+            _uiManager.HideGameMenu();
         }
     }
 

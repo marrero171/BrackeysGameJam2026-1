@@ -15,9 +15,14 @@ public class State_Fail : IGameState
     {
         Debug.Log("[State_Fail] Entered - Player Failed!");
 
+        if (PauseManager.Instance != null)
+        {
+            PauseManager.Instance.ForceResume();
+        }
+
         if (_uiManager != null)
         {
-            _uiManager.ShowFailText();
+            _uiManager.ShowFailPanel();
         }
     }
 
@@ -27,7 +32,7 @@ public class State_Fail : IGameState
 
         if (_uiManager != null)
         {
-            _uiManager.HideFailText();
+            _uiManager.HideFailPanel();
         }
     }
 

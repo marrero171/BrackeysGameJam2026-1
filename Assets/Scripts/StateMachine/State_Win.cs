@@ -15,9 +15,14 @@ public class State_Win : IGameState
     {
         Debug.Log("[State_Win] Entered - Player Won!");
 
+        if (PauseManager.Instance != null)
+        {
+            PauseManager.Instance.ForceResume();
+        }
+
         if (_uiManager != null)
         {
-            _uiManager.ShowWinText();
+            _uiManager.ShowWinPanel();
         }
     }
 
@@ -27,7 +32,7 @@ public class State_Win : IGameState
 
         if (_uiManager != null)
         {
-            _uiManager.HideWinText();
+            _uiManager.HideWinPanel();
         }
     }
 

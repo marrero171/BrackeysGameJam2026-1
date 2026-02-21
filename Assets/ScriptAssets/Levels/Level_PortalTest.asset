@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cc1ca9ecaa6fa674f8fe157cd3f1673c, type: 3}
-  m_Name: Level1
+  m_Name: Level_PortalTest
   m_EditorClassIdentifier: Assembly-CSharp::LevelData
-  levelId: 0
+  levelId: portal_test
   boards:
-  - {fileID: 11400000, guid: 4aebfd8c21d050f469e5e57bebd27c14, type: 2}
-  - {fileID: 11400000, guid: 996defd4f89439f42aa191e5fcab53ca, type: 2}
+  - {fileID: 11400000, guid: 7e8879aec5924f7448c3953b8d9cabea, type: 2}
+  - {fileID: 11400000, guid: 61ed031c9f9a4de42998759791094a72, type: 2}
   startingTile:
     boardIndex: 0
-    position: {x: 0, y: 3}
+    position: {x: 0, y: 0}
   characterStartDirection: {x: 1, y: 0, z: 0}
   goalTile:
     boardIndex: 1

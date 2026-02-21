@@ -71,6 +71,7 @@ public class CharacterMover : MonoBehaviour
     {
         StopMoving();
         DespawnCharacter();
+        
         if (LevelManager.Instance == null || LevelManager.Instance.CurrentLevelData == null)
         {
             Debug.LogError("[CharacterMover] LevelManager or LevelData not found!");
@@ -86,28 +87,44 @@ public class CharacterMover : MonoBehaviour
             (int)levelData.characterStartDirection.z
         );
 
-        Vector3 spawnWorldPos = CharacterTileGrid.GridToWorldPosition(_currentGridPosition);
+        if (BoardManager.Instance == null)
+        {
+            Debug.LogError("[CharacterMover] BoardManager not found!");
+            return;
+        }
+
+        if (BoardManager.Instance.ActiveBoardIndex != _currentBoardIndex)
+        {
+            Debug.LogWarning($"[CharacterMover] Active board ({BoardManager.Instance.ActiveBoardIndex}) doesn't match starting board ({_currentBoardIndex}). Switching...");
+            BoardManager.Instance.SetActiveBoard(_currentBoardIndex, false);
+        }
+
+        Board targetBoard = BoardManager.Instance.GetBoard(_currentBoardIndex);
+        if (targetBoard == null || targetBoard.TileGrid == null)
+        {
+            Debug.LogError($"[CharacterMover] Board {_currentBoardIndex} or its TileGrid not found!");
+            return;
+        }
+
+        Vector3 spawnWorldPos = targetBoard.TileGrid.GridToWorldPosition(_currentGridPosition);
         spawnWorldPos.y += heightOffset;
 
         if (characterPrefab != null)
         {
             _characterInstance = Instantiate(characterPrefab, spawnWorldPos, Quaternion.identity, transform);
-            Debug.Log($"[CharacterMover] Character spawned from prefab at {_currentGridPosition}");
+            Debug.Log($"[CharacterMover] Character spawned from prefab at board {_currentBoardIndex}, position {_currentGridPosition}");
         }
         else
         {
             transform.position = spawnWorldPos;
             _characterInstance = gameObject;
-            Debug.Log($"[CharacterMover] Character positioned (no prefab) at {_currentGridPosition}");
+            Debug.Log($"[CharacterMover] Character positioned (no prefab) at board {_currentBoardIndex}, position {_currentGridPosition}");
         }
 
-        if (BoardManager.Instance != null)
-        {
-            bool onActiveBoard = (BoardManager.Instance.ActiveBoardIndex == _currentBoardIndex);
-            SetCharacterVisible(onActiveBoard);
-        }
+        bool onActiveBoard = (BoardManager.Instance.ActiveBoardIndex == _currentBoardIndex);
+        SetCharacterVisible(onActiveBoard);
 
-        Debug.Log($"[CharacterMover] Initialized at board {_currentBoardIndex}, position {_currentGridPosition}, direction: {_moveDirection}");
+        Debug.Log($"[CharacterMover] Character fully initialized - Board: {_currentBoardIndex}, Position: {_currentGridPosition}, Direction: {_moveDirection}, Visible: {onActiveBoard}");
     }
 
     public void DespawnCharacter()
@@ -153,9 +170,11 @@ public class CharacterMover : MonoBehaviour
         {
             StopCoroutine(_moveCoroutine);
             _moveCoroutine = null;
-            _isMoving = false;
-            Debug.Log("[CharacterMover] Stopped moving");
         }
+        
+        StopAllCoroutines();
+        _isMoving = false;
+        Debug.Log("[CharacterMover] Stopped moving - all coroutines stopped");
     }
 
 
@@ -347,10 +366,10 @@ public class CharacterMover : MonoBehaviour
 
         _currentGridPosition = targetGridPos;
 
-        // Chain resolve tile effects
         TileEffectResult result = TileEffectResult.Continue;
 
         bool resolving = true;
+        bool justUsedPortal = false;
 
         while (resolving)
         {
@@ -360,26 +379,48 @@ public class CharacterMover : MonoBehaviour
             TileEffectContext context = new TileEffectContext
             {
                 tileGrid = CharacterTileGrid,
+                currentBoardIndex = _currentBoardIndex,
                 position = _currentGridPosition,
                 direction = _moveDirection,
-                tileData = currentTile
+                tileData = currentTile,
+                switchedBoard = false,
+                targetBoardIndex = -1,
+                justUsedPortal = justUsedPortal
             };
 
             Vector2Int previousPosition = context.position;
+            int previousBoardIndex = _currentBoardIndex;
 
             result = TileEffectResolver.Resolve(ref context);
+
+            justUsedPortal = context.justUsedPortal;
 
             Debug.Log(
                 $"[MoveStep] Chain resolve -> " +
                 $"from={previousPosition} " +
                 $"to={context.position} " +
+                $"board={context.currentBoardIndex} " +
+                $"justUsedPortal={justUsedPortal} " +
                 $"visual={context.visualEffect}");
 
             _moveDirection = context.direction;
 
-            // Play visual if movement happened
+            if (context.switchedBoard && context.targetBoardIndex != -1)
+            {
+                Debug.Log($"[CharacterMover] Portal used! Switching from board {_currentBoardIndex} to {context.targetBoardIndex}");
+                
+                _currentBoardIndex = context.targetBoardIndex;
+                
+                if (BoardManager.Instance != null)
+                {
+                    BoardManager.Instance.SetActiveBoard(_currentBoardIndex, false);
+                }
+                
+                SetCharacterVisible(true);
+            }
+
             if (context.visualEffect != TileEffectVisual.None &&
-                context.position != previousPosition)
+                (context.position != previousPosition || context.switchedBoard))
             {
                 yield return StartCoroutine(
                     PlayVisual(
@@ -390,7 +431,6 @@ public class CharacterMover : MonoBehaviour
                 _currentGridPosition = context.position;
             }
 
-            // Continue resolving if position changed
             resolving = context.position != previousPosition;
         }
 

@@ -30,6 +30,11 @@ public class InputManager : MonoBehaviour
 
     private void Update()
     {
+        if (PauseManager.Instance != null && PauseManager.Instance.IsPaused)
+        {
+            return;
+        }
+
         HandleMouseInput();
         HandleUndoInput();
     }

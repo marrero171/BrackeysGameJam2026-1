@@ -27,10 +27,10 @@ public class LevelDebugUI : MonoBehaviour
 
     private void Start()
     {
-        UpdateUI();
+        UpdateUI(0);
     }
 
-    private void UpdateUI()
+    private void UpdateUI(int levelIndex)
     {
         if (LevelManager.Instance == null || levelInfoText == null)
         {
@@ -44,7 +44,7 @@ public class LevelDebugUI : MonoBehaviour
             return;
         }
 
-        string info = $"Level: {levelData.levelId}\n";
+        string info = $"Level: {levelIndex} ({levelData.levelId})\n";
         info += $"Board: {LevelManager.Instance.CurrentBoardIndex}/{levelData.boards.Length - 1}\n";
         info += $"Starting Tile Board: {levelData.startingTile.boardIndex}\n";
         info += $"Goal Tile Board: {levelData.goalTile.boardIndex}";

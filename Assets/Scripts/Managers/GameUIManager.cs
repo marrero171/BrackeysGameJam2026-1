@@ -5,8 +5,23 @@ public class GameUIManager : MonoBehaviour
 {
     [Header("UI Elements")]
     [SerializeField] private GameObject playButton;
-    [SerializeField] private GameObject winText;
-    [SerializeField] private GameObject failText;
+    [SerializeField] private GameObject winPanel;
+    [SerializeField] private GameObject failPanel;
+    [SerializeField] private GameObject gameMenuPanel;
+
+    [Header("Win Panel Buttons")]
+    [SerializeField] private Button nextButton;
+    [SerializeField] private Button retryButtonWin;
+    [SerializeField] private Button mainMenuButtonWin;
+
+    [Header("Fail Panel Buttons")]
+    [SerializeField] private Button retryButtonFail;
+    [SerializeField] private Button mainMenuButtonFail;
+
+    [Header("Game Menu Buttons")]
+    [SerializeField] private Button resumeButton;
+    [SerializeField] private Button retryButtonGameMenu;
+    [SerializeField] private Button mainMenuButtonGameMenu;
 
     private Button _playButtonComponent;
     private bool _isPlayButtonEnabled = true;
@@ -30,6 +45,8 @@ public class GameUIManager : MonoBehaviour
         {
             Debug.LogError("[GameUIManager] PlayButton GameObject is not assigned!");
         }
+
+        ConnectPanelButtons();
     }
 
     private void OnDestroy()
@@ -42,6 +59,52 @@ public class GameUIManager : MonoBehaviour
                 button.onClick.RemoveListener(OnPlayButtonClicked);
             }
         }
+
+        DisconnectPanelButtons();
+    }
+
+    private void ConnectPanelButtons()
+    {
+        if (nextButton != null)
+            nextButton.onClick.AddListener(OnNextButtonClicked);
+        if (retryButtonWin != null)
+            retryButtonWin.onClick.AddListener(OnRetryButtonClicked);
+        if (mainMenuButtonWin != null)
+            mainMenuButtonWin.onClick.AddListener(OnMainMenuButtonClicked);
+
+        if (retryButtonFail != null)
+            retryButtonFail.onClick.AddListener(OnRetryButtonClicked);
+        if (mainMenuButtonFail != null)
+            mainMenuButtonFail.onClick.AddListener(OnMainMenuButtonClicked);
+
+        if (resumeButton != null)
+            resumeButton.onClick.AddListener(OnResumeButtonClicked);
+        if (retryButtonGameMenu != null)
+            retryButtonGameMenu.onClick.AddListener(OnRetryButtonClicked);
+        if (mainMenuButtonGameMenu != null)
+            mainMenuButtonGameMenu.onClick.AddListener(OnMainMenuButtonClicked);
+    }
+
+    private void DisconnectPanelButtons()
+    {
+        if (nextButton != null)
+            nextButton.onClick.RemoveListener(OnNextButtonClicked);
+        if (retryButtonWin != null)
+            retryButtonWin.onClick.RemoveListener(OnRetryButtonClicked);
+        if (mainMenuButtonWin != null)
+            mainMenuButtonWin.onClick.RemoveListener(OnMainMenuButtonClicked);
+
+        if (retryButtonFail != null)
+            retryButtonFail.onClick.RemoveListener(OnRetryButtonClicked);
+        if (mainMenuButtonFail != null)
+            mainMenuButtonFail.onClick.RemoveListener(OnMainMenuButtonClicked);
+
+        if (resumeButton != null)
+            resumeButton.onClick.RemoveListener(OnResumeButtonClicked);
+        if (retryButtonGameMenu != null)
+            retryButtonGameMenu.onClick.RemoveListener(OnRetryButtonClicked);
+        if (mainMenuButtonGameMenu != null)
+            mainMenuButtonGameMenu.onClick.RemoveListener(OnMainMenuButtonClicked);
     }
 
     public void OnPlayButtonClicked()
@@ -94,44 +157,133 @@ public class GameUIManager : MonoBehaviour
         }
     }
 
-    public void ShowWinText()
+    public void ShowWinPanel()
     {
-        if (winText != null)
+        if (winPanel != null)
         {
-            winText.gameObject.SetActive(true);
-            Debug.Log("[GameUIManager] Win text shown");
+            winPanel.SetActive(true);
+            Debug.Log("[GameUIManager] Win panel shown");
         }
     }
 
-    public void HideWinText()
+    public void HideWinPanel()
     {
-        if (winText != null)
+        if (winPanel != null)
         {
-            winText.gameObject.SetActive(false);
+            winPanel.SetActive(false);
         }
     }
 
-    public void ShowFailText()
+    public void ShowFailPanel()
     {
-        if (failText != null)
+        if (failPanel != null)
         {
-            failText.gameObject.SetActive(true);
-            Debug.Log("[GameUIManager] Fail text shown");
+            failPanel.SetActive(true);
+            Debug.Log("[GameUIManager] Fail panel shown");
         }
     }
 
-    public void HideFailText()
+    public void HideFailPanel()
     {
-        if (failText != null)
+        if (failPanel != null)
         {
-            failText.gameObject.SetActive(false);
+            failPanel.SetActive(false);
         }
+    }
+
+    public void ShowGameMenu()
+    {
+        if (gameMenuPanel != null)
+        {
+            gameMenuPanel.SetActive(true);
+            Debug.Log("[GameUIManager] Game menu shown");
+        }
+    }
+
+    public void HideGameMenu()
+    {
+        if (gameMenuPanel != null)
+        {
+            gameMenuPanel.SetActive(false);
+        }
+    }
+
+    private void OnResumeButtonClicked()
+    {
+        Debug.Log("[GameUIManager] Resume button clicked");
+        
+        if (PauseManager.Instance != null)
+        {
+            PauseManager.Instance.Resume();
+        }
+    }
+
+    private void OnNextButtonClicked()
+    {
+        Debug.Log("[GameUIManager] Next button clicked");
+        
+        HideWinPanel();
+        
+        if (LevelManager.Instance != null)
+        {
+            if (LevelManager.Instance.HasNextLevel)
+            {
+                LevelManager.Instance.LoadNextLevel();
+            }
+            else
+            {
+                Debug.Log("[GameUIManager] No more levels! Restarting from first level.");
+                LevelManager.Instance.LoadLevel(0);
+            }
+        }
+        
+        if (GameStateMachine.Instance != null)
+        {
+            GameStateMachine.Instance.TransitionTo<State_Setup>();
+        }
+    }
+
+    private void OnRetryButtonClicked()
+    {
+        Debug.Log("[GameUIManager] Retry button clicked");
+        
+        if (PauseManager.Instance != null)
+        {
+            PauseManager.Instance.ForceResume();
+        }
+        
+        HideWinPanel();
+        HideFailPanel();
+        HideGameMenu();
+        
+        if (LevelManager.Instance != null)
+        {
+            LevelManager.Instance.ReloadCurrentLevel();
+        }
+        
+        if (GameStateMachine.Instance != null)
+        {
+            GameStateMachine.Instance.TransitionTo<State_Setup>();
+        }
+    }
+
+    private void OnMainMenuButtonClicked()
+    {
+        Debug.Log("[GameUIManager] Main Menu button clicked");
+        
+        if (PauseManager.Instance != null)
+        {
+            PauseManager.Instance.ForceResume();
+        }
+        
+        OnRetryButtonClicked();
     }
 
     private void HideAllUI()
     {
         HidePlayButton();
-        HideWinText();
-        HideFailText();
+        HideWinPanel();
+        HideFailPanel();
+        HideGameMenu();
     }
 }

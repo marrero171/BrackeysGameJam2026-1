@@ -38,11 +38,48 @@ public static class TileEffectResolver
                 return TileEffectResult.Continue;
 
             case TileType.Portal:
-                Debug.LogWarning($"[TileEffectResolver] TileType 'Portal' not yet implemented - treating as Normal");
-                return TileEffectResult.Continue;
+                {
+                    if (context.justUsedPortal)
+                    {
+                        Debug.Log($"[TileEffectResolver] Portal at {context.position} skipped (just arrived from another portal)");
+                        context.justUsedPortal = false;
+                        return TileEffectResult.Continue;
+                    }
+
+                    Debug.Log($"[TileEffectResolver] Portal triggered at board {context.currentBoardIndex}");
+
+                    if (FindPortalPair(
+                        context.tileData.teleportID,
+                        context.position,
+                        context.currentBoardIndex,
+                        out int targetBoard,
+                        out Vector2Int pairPos,
+                        out Vector2Int exitDir))
+                    {
+                        context.targetBoardIndex = targetBoard;
+                        context.position = pairPos;
+                        context.direction = exitDir;
+                        context.visualEffect = TileEffectVisual.Teleport;
+                        context.switchedBoard = true;
+                        context.justUsedPortal = true;
+
+                        Debug.Log($"[TileEffectResolver] Portal pair found on board {targetBoard} at {pairPos}");
+                        return TileEffectResult.Continue;
+                    }
+
+                    Debug.LogWarning("[TileEffectResolver] No portal pair found!");
+                    return TileEffectResult.Fail;
+                }
 
             case TileType.Teleport:
                 {
+                    if (context.justUsedPortal)
+                    {
+                        Debug.Log($"[TileEffectResolver] Teleport at {context.position} skipped (just arrived from another teleport)");
+                        context.justUsedPortal = false;
+                        return TileEffectResult.Continue;
+                    }
+
                     Debug.Log($"[TileEffectResolver] Teleport triggered");
 
                     if (FindTeleportPair(
@@ -56,6 +93,7 @@ public static class TileEffectResolver
                         context.direction = exitDirection;
 
                         context.visualEffect = TileEffectVisual.Teleport;
+                        context.justUsedPortal = true;
 
                         return TileEffectResult.Continue;
                     }
@@ -136,7 +174,6 @@ public static class TileEffectResolver
             return false;
         }
 
-        // Buscar todos los tiles en el grid
         var allTiles = tileGrid.GetAllTiles();
 
         foreach (var kvp in allTiles)
@@ -144,11 +181,9 @@ public static class TileEffectResolver
             Vector2Int pos = kvp.Key;
             GameObject tileObj = kvp.Value;
 
-            // Ignorar el tile actual
             if (pos == currentPosition)
                 continue;
 
-            // Verificar si es un teleport con el mismo ID
             TileBase tileBase = tileObj.GetComponent<TileBase>();
             if (tileBase != null && tileBase.tileData != null)
             {
@@ -163,6 +198,69 @@ public static class TileEffectResolver
         }
 
         Debug.LogWarning($"[TileEffectResolver] No teleport pair found for ID {teleportID}");
+        return false;
+    }
+
+    public static bool FindPortalPair(
+    int teleportID,
+    Vector2Int currentPosition,
+    int currentBoardIndex,
+    out int targetBoardIndex,
+    out Vector2Int pairPosition,
+    out Vector2Int exitDirection)
+    {
+        targetBoardIndex = -1;
+        pairPosition = Vector2Int.zero;
+        exitDirection = Vector2Int.right;
+
+        if (teleportID == 0)
+        {
+            Debug.LogWarning("[TileEffectResolver] Portal ID is 0, no pairing possible");
+            return false;
+        }
+
+        if (BoardManager.Instance == null)
+        {
+            Debug.LogError("[TileEffectResolver] BoardManager not found!");
+            return false;
+        }
+
+        var allBoards = BoardManager.Instance.GetAllBoards();
+
+        for (int i = 0; i < allBoards.Count; i++)
+        {
+            if (i == currentBoardIndex)
+                continue;
+
+            Board board = allBoards[i];
+            if (board == null || board.TileGrid == null)
+                continue;
+
+            TileGrid tileGrid = board.TileGrid;
+            var allTiles = tileGrid.GetAllTiles();
+
+            foreach (var kvp in allTiles)
+            {
+                Vector2Int pos = kvp.Key;
+                GameObject tileObj = kvp.Value;
+
+                TileBase tileBase = tileObj.GetComponent<TileBase>();
+                if (tileBase?.tileData != null)
+                {
+                    if (tileBase.tileData.tileType == TileType.Portal && 
+                        tileBase.tileData.teleportID == teleportID)
+                    {
+                        targetBoardIndex = i;
+                        pairPosition = pos;
+                        exitDirection = tileBase.tileData.exitDirection;
+                        Debug.Log($"[TileEffectResolver] Found portal pair on board {i} at {pairPosition} with exit direction {exitDirection}");
+                        return true;
+                    }
+                }
+            }
+        }
+
+        Debug.LogWarning($"[TileEffectResolver] No portal pair found for ID {teleportID}");
         return false;
     }
 
