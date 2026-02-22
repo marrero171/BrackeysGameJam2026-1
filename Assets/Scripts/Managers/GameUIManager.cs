@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameUIManager : MonoBehaviour
 {
@@ -269,14 +270,16 @@ public class GameUIManager : MonoBehaviour
 
     private void OnMainMenuButtonClicked()
     {
-        Debug.Log("[GameUIManager] Main Menu button clicked");
+        Debug.Log("[GameUIManager] Main Menu button clicked - Loading Main Menu");
         
         if (PauseManager.Instance != null)
         {
             PauseManager.Instance.ForceResume();
         }
         
-        OnRetryButtonClicked();
+        HideAllUI();
+        
+        SceneManager.LoadScene("MainMenu");
     }
 
     private void HideAllUI()

@@ -108,15 +108,16 @@ public class BoardSwitcherUI : MonoBehaviour
     private void UpdateButtonStates()
     {
         int boardCount = BoardManager.Instance.BoardCount;
+        bool showButtons = boardCount > 1;
 
         if (previousButton != null)
         {
-            previousButton.interactable = boardCount > 1;
+            previousButton.gameObject.SetActive(showButtons);
         }
 
         if (nextButton != null)
         {
-            nextButton.interactable = boardCount > 1;
+            nextButton.gameObject.SetActive(showButtons);
         }
     }
 
